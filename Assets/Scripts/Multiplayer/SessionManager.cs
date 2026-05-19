@@ -10,6 +10,10 @@ using UnityUtils;
 
 public class SessionManager : Singleton<SessionManager>
 {
+
+    public event Action OnSessionEnded;
+    //public event Action OnBecameSessionOwner; //talvez futuro.
+
     private ISession activeSession;
     public ISession ActiveSession
     {
@@ -26,8 +30,11 @@ public class SessionManager : Singleton<SessionManager>
     const string playerNamePropertyKey = "playerName";
     
     private NetworkManager networkManager;
-    
-    async void Start()
+
+    //Exceção é capturada e logada pelo Forget().
+    void Start() => InitializeAsync().Forget();
+
+    private async UniTask InitializeAsync()
     {
         try
         {
@@ -103,20 +110,19 @@ public class SessionManager : Singleton<SessionManager>
     //TODO: Implementar no lobby
     public async UniTask LeaveSession()
     {
-        if (ActiveSession != null)
+        if (ActiveSession == null) return;
+        try
         {
-            try
-            {
-                await ActiveSession.LeaveAsync();
-            }
-            catch (Exception e)
-            {
-                Debug.LogException(e);
-            }
-            finally
-            {
-                ActiveSession = null;
-            }
+            await ActiveSession.LeaveAsync();
+        }
+        catch (Exception e)
+        {
+            Debug.LogException(e);
+        }
+        finally
+        {
+            ActiveSession = null;
+            OnSessionEnded?.Invoke();
         }
     }
 }
