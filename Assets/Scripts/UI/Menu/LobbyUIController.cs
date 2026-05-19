@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro; 
@@ -12,6 +13,7 @@ public class LobbyUIController : MonoBehaviour
     [SerializeField] private Button joinSessionButton;
     [SerializeField] private TextMeshProUGUI statusLabel;
     [SerializeField] private Button startGameButton;
+    [SerializeField] private Button exitGameButton;
     [Header("Nome da sua cena")]
     [SerializeField] private string gameSceneName = "GameScene";
     
@@ -22,6 +24,7 @@ public class LobbyUIController : MonoBehaviour
         createSessionButton.onClick.AddListener(OnCreateSessionClicked);
         joinSessionButton.onClick.AddListener(OnJoinSessionClicked);
         startGameButton.onClick.AddListener(OnStartGameClicked);
+        exitGameButton.onClick.AddListener(OnExitGameClicked);
     }
 
     private void OnDisable()
@@ -29,6 +32,7 @@ public class LobbyUIController : MonoBehaviour
         createSessionButton.onClick.RemoveListener(OnCreateSessionClicked);
         joinSessionButton.onClick.RemoveListener(OnJoinSessionClicked);
         startGameButton.onClick.RemoveListener(OnStartGameClicked);
+        exitGameButton.onClick.RemoveListener(OnExitGameClicked);
 
         UnsubscribeNetworkEvents();
     }
@@ -103,6 +107,19 @@ public class LobbyUIController : MonoBehaviour
             {
                 startGameButton.interactable = false;
                 networkManager.SceneManager.LoadScene(gameSceneName, UnityEngine.SceneManagement.LoadSceneMode.Single);
+            }
+        }
+
+        private async void OnExitGameClicked()
+        {
+            try
+            {
+                await SessionManager.Instance.LeaveSession();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
             }
         }
 

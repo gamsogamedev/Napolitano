@@ -10,6 +10,9 @@ using UnityUtils;
 
 public class SessionManager : Singleton<SessionManager>
 {
+    public event Action OnSelfConnectionLost;
+    public event Action OnTeammateConnectionLost;
+    
     private ISession activeSession;
     public ISession ActiveSession
     {
@@ -64,8 +67,7 @@ public class SessionManager : Singleton<SessionManager>
             }.WithDistributedAuthorityNetwork();
             
             ActiveSession = await MultiplayerService.Instance.CreateSessionAsync(options);
-            Debug.Log("Session ID: " + ActiveSession.Id);
-            Debug.Log("Session Code: " + ActiveSession.Code);
+            SubscribeToEvents();
         }
         catch (Exception e)
         {
@@ -85,10 +87,53 @@ public class SessionManager : Singleton<SessionManager>
             };
 
             ActiveSession = await MultiplayerService.Instance.JoinSessionByCodeAsync(code, joinOptions);
+            SubscribeToEvents();
         }
         catch (Exception e)
         {
             Debug.LogError($"Failed to join session: {e.Message}");
+        }
+    }
+    
+    private void SubscribeToEvents()
+    {
+        if (ActiveSession != null)
+        {
+            ActiveSession.PlayerLeaving += HandlePlayerLeft;
+            
+            if (NetworkManager.Singleton != null)
+            {
+                NetworkManager.Singleton.OnClientDisconnectCallback += HandleLocalDisconnect;
+            }
+        }
+    }
+    
+    private void UnsubscribeFromEvents()
+    {
+        if (ActiveSession != null)
+        {
+            ActiveSession.PlayerLeaving -= HandlePlayerLeft;
+        }
+        if (NetworkManager.Singleton != null)
+        {
+            NetworkManager.Singleton.OnClientDisconnectCallback -= HandleLocalDisconnect;
+        }
+    }
+    
+    private void HandlePlayerLeft(string playerId)
+    {
+        OnTeammateConnectionLost?.Invoke();
+    }
+    
+    private void HandleLocalDisconnect(ulong clientId)
+    {
+        if (clientId == NetworkManager.Singleton.LocalClientId)
+        {
+            Debug.LogWarning("SessionManager: Self connection lost.");
+            OnSelfConnectionLost?.Invoke();
+            
+            UnsubscribeFromEvents();
+            ActiveSession = null; 
         }
     }
 
@@ -100,7 +145,7 @@ public class SessionManager : Singleton<SessionManager>
         await ActiveSession.AsHost().RemovePlayerAsync(playerID);
     }
 
-    //TODO: Implementar no lobby
+    //TODO: Implementar no lobby DECENTEMENTE
     public async UniTask LeaveSession()
     {
         if (ActiveSession != null)
@@ -115,7 +160,13 @@ public class SessionManager : Singleton<SessionManager>
             }
             finally
             {
+                UnsubscribeFromEvents();
                 ActiveSession = null;
+                
+                if (NetworkManager.Singleton != null)
+                {
+                    NetworkManager.Singleton.Shutdown();
+                }
             }
         }
     }
