@@ -35,7 +35,11 @@ namespace Player
         [SerializeField] private Interact interactComponent;
         [SerializeField] private SpriteRenderer spriteRenderer;
         [SerializeField] private Transform spoonHoldPoint;
-
+        
+        [Header("Visuais por Estado")] 
+        [SerializeField] private Color coneColor = Color.yellow;
+        [SerializeField] private Color iceCreamColor = new Color(1f, 0.5f, 0.8f);
+        
         private InputAction _interactAction;
         private InputAction _jumpAction;
         private InputAction _moveAction;
@@ -144,6 +148,9 @@ namespace Player
             CurrentState = newState;
             CurrentState.EnterState(this);
 
+            var stateType = GetStateType(newState);
+            ApplyStateVisuals(stateType);
+
             if (IsOwner)
                 _networkedState.Value = GetStateType(newState);
         }
@@ -180,7 +187,13 @@ namespace Player
 
         private void ApplyStateVisuals(PlayerStateType stateType)
         {
-            // TODO: trocar sprites/tamanho do collider conforme o estado
+            if (!spriteRenderer) return;
+            spriteRenderer.color = stateType switch
+            {
+                PlayerStateType.Cone => coneColor,
+                PlayerStateType.IceCream => iceCreamColor,
+                _ => Color.white
+            };
         }
     }
 }
