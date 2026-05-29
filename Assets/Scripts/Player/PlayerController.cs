@@ -36,6 +36,9 @@ namespace Player
         [SerializeField] private SpriteRenderer spriteRenderer;
         [SerializeField] private Transform spriteTransform;
         [SerializeField] private Transform spoonHoldPoint;
+        [SerializeField] private GameObject spoonPrefab;
+        
+        public Spoon CarriedSpoon { get; private set; }
         
         [Header("Visuais por Estado")] 
         [SerializeField] private Color coneColor = Color.yellow;
@@ -133,6 +136,16 @@ namespace Player
                 Debug.LogError("[PlayerController] InputActionAsset não atribuído no Inspector!");
             }
 
+            if (spoonPrefab != null)
+            {
+                var spoonObj = Instantiate(spoonPrefab, spoonHoldPoint.position, Quaternion.identity);
+                var spoonNet = spoonObj.GetComponent<NetworkObject>();
+                spoonNet.SpawnWithOwnership(OwnerClientId);
+
+                CarriedSpoon = spoonObj.GetComponent<Spoon>();
+                CarriedSpoon.AttachTo(this);
+            }
+            
             ChangeState(ConeState);
         }
 
@@ -149,6 +162,12 @@ namespace Player
         {
             if (newState == null) return;
 
+            if (newState == IceCreamState && !CarriedSpoon)
+            {
+                CarriedSpoon.Drop();
+                CarriedSpoon = null;
+            }
+            
             CurrentState?.ExitState(this);
             CurrentState = newState;
             CurrentState.EnterState(this);
@@ -171,6 +190,8 @@ namespace Player
             if (directionX != 0) spriteRenderer.flipX = directionX < 0;
         }
 
+        public void SetCarriedSpoon(Spoon spoon) => CarriedSpoon = spoon;
+        
         public bool IsGrounded()
         {
             if (!groundCheckPoint) return false;

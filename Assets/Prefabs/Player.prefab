@@ -275,7 +275,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 2229272520
+  GlobalObjectIdHash: 2130242756
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -317,6 +317,7 @@ MonoBehaviour:
   spriteRenderer: {fileID: 5824778800778296040}
   spriteTransform: {fileID: 6087286407425204411}
   spoonHoldPoint: {fileID: 7921991437497426451}
+  spoon: {fileID: 0}
   coneColor: {r: 0.5283019, g: 0.3271542, b: 0.18689926, a: 1}
   iceCreamColor: {r: 1, g: 0.5, b: 0.8, a: 1}
   coneSpriteScale: {x: 1, y: 2, z: 1}
@@ -338,7 +339,7 @@ MonoBehaviour:
   detectionRadius: 1.5
   interactableLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 128
   detectionOrigin: {fileID: 0}
 --- !u!114 &8174377114781626229
 MonoBehaviour:

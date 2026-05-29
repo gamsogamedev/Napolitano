@@ -20,9 +20,17 @@ namespace Player.States
                 player.ChangeState(player.IceCreamState);
             }
 
-            if (player.InteractInputThisFrame && player.InteractComponent) 
+            if (player.InteractInputThisFrame)
             {
-                player.InteractComponent.CheckAndInteract();
+                if (!player.CarriedSpoon)
+                {
+                    player.CarriedSpoon.Drop();
+                    player.SetCarriedSpoon(null);
+                }
+                else if (player.InteractComponent)
+                {
+                    player.InteractComponent.CheckAndInteract();
+                }
             }
         }
 
