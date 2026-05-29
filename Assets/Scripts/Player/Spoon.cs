@@ -54,33 +54,56 @@ namespace Player
 
             _rb.MovePosition(Vector2.Lerp(_rb.position, _holdPoint.position, followSpeed * Time.fixedDeltaTime));
         }
-        
+
         public void Interact(PlayerController interactor)
         {
+            if (_isCarried.Value && IsOwner)
+            {
+                Drop();
+                return;
+;           }
+
             RequestPickupRpc(interactor.OwnerClientId);
         }
 
         [Rpc(SendTo.Owner)]
         private void RequestPickupRpc(ulong interactorClientId)
         {
-            NetworkObject.ChangeOwnership(interactorClientId);
-            AttachToRpc(interactorClientId);
+            if (interactorClientId == OwnerClientId)
+            {
+                var players = FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
+                foreach (var player in players)
+                {
+                    if (player.OwnerClientId == interactorClientId && player.CurrentState == player.ConeState)
+                    {
+                        AttachTo(player);
+                        return;
+                    }
+                        
+                }
+            }
+            else
+            {
+                NetworkObject.ChangeOwnership(interactorClientId);
+                PickupAfterOwnershipRpc(interactorClientId);
+            }
         }
-        
+
         [Rpc(SendTo.Everyone)]
-        private void AttachToRpc(ulong newOwnerClientId)
+        private void PickupAfterOwnershipRpc(ulong newOwnerClientId)
         {
             if (NetworkManager.Singleton.LocalClientId != newOwnerClientId) return;
 
             var players = FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
             foreach (var player in players)
             {
-                AttachTo(player);
-                return;
+                if (player.OwnerClientId == newOwnerClientId && player.CurrentState == player.ConeState)
+                {
+                    AttachTo(player);
+                    return;
+                }
             }
         }
-        
-        
 
         private void OnCarriedChanged(bool previous, bool current)
         {
