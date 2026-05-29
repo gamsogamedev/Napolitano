@@ -162,7 +162,7 @@ namespace Player
         {
             if (newState == null) return;
 
-            if (newState == IceCreamState && !CarriedSpoon)
+            if (newState == IceCreamState && CarriedSpoon)
             {
                 CarriedSpoon.Drop();
                 CarriedSpoon = null;

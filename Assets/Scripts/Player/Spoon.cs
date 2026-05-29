@@ -42,7 +42,7 @@ namespace Player
 
         public void Drop()
         {
-            if (!IsOwnedByServer) return;
+            if (!IsOwner) return;
 
             _holdPoint = null;
             _isCarried.Value = false;
