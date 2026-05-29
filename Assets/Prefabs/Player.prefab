@@ -274,7 +274,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 1556985422
+  GlobalObjectIdHash: 2229272520
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -304,17 +304,17 @@ MonoBehaviour:
   iceCreamSpeed: 6
   spoonFollowSpeed: 15
   jumpForce: 15
-  coneCollider: {fileID: 0}
-  iceCreamCollider: {fileID: 0}
+  coneCollider: {fileID: 5461861302232947763}
+  iceCreamCollider: {fileID: 2871198844247019810}
   groundLayer:
     serializedVersion: 2
-    m_Bits: 0
-  groundCheckPoint: {fileID: 0}
+    m_Bits: 64
+  groundCheckPoint: {fileID: 6316607190666682914}
   groundCheckRadius: 0.2
-  inputActions: {fileID: 0}
-  interactComponent: {fileID: 0}
-  spriteRenderer: {fileID: 0}
-  spoonHoldPoint: {fileID: 0}
+  inputActions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+  interactComponent: {fileID: 2698973961219381762}
+  spriteRenderer: {fileID: 5824778800778296040}
+  spoonHoldPoint: {fileID: 7921991437497426451}
   coneColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   iceCreamColor: {r: 1, g: 0.5, b: 0.8, a: 1}
 --- !u!114 &2698973961219381762
