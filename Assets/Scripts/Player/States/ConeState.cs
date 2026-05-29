@@ -20,10 +20,6 @@ namespace Player.States
             if (player.JumpInputThisFrame && player.IsGrounded()) 
             {
                 player.ChangeState(player.IceCreamState);
-                
-                var velocity = player.Rb.linearVelocity;
-                velocity.y = player.JumpForce;
-                player.Rb.linearVelocity = velocity;
             }
 
             if (player.InteractInputThisFrame && player.InteractComponent) 
