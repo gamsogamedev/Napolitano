@@ -188,7 +188,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!70 &5461861302232947763
 CapsuleCollider2D:
@@ -315,9 +315,14 @@ MonoBehaviour:
   inputActions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   interactComponent: {fileID: 2698973961219381762}
   spriteRenderer: {fileID: 5824778800778296040}
+  spriteTransform: {fileID: 6087286407425204411}
   spoonHoldPoint: {fileID: 7921991437497426451}
   coneColor: {r: 0.5283019, g: 0.3271542, b: 0.18689926, a: 1}
   iceCreamColor: {r: 1, g: 0.5, b: 0.8, a: 1}
+  coneSpriteScale: {x: 1, y: 2, z: 1}
+  iceCreamSpriteScale: {x: 1, y: 1, z: 1}
+  coneGroundCheckY: -1
+  iceCreamGroundCheckY: -0.5
 --- !u!114 &2698973961219381762
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -361,7 +366,7 @@ MonoBehaviour:
   ScaleMaxInterpolationTime: 0.1
   AuthorityMode: 1
   TickSyncChildren: 0
-  UseUnreliableDeltas: 0
+  UseUnreliableDeltas: 1
   SyncPositionX: 1
   SyncPositionY: 1
   SyncPositionZ: 1

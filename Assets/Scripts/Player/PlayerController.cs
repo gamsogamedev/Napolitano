@@ -221,6 +221,9 @@ namespace Player
                     _ => -0.5f
                 }, 0f);
             }
+            
+            if (coneCollider) coneCollider.enabled = stateType == PlayerStateType.Cone;
+            if (iceCreamCollider) iceCreamCollider.enabled = stateType == PlayerStateType.IceCream;
         }
     }
 }

@@ -11,8 +11,6 @@ namespace Player.States
 
         public void EnterState(PlayerController player)
         {
-            if (player.IceCreamCollider) player.IceCreamCollider.enabled = true;
-            if (player.ConeCollider) player.ConeCollider.enabled = false;
         }
 
         public void Execute(PlayerController player)
