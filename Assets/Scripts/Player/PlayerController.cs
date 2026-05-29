@@ -34,11 +34,16 @@ namespace Player
         [Header("Referências")] 
         [SerializeField] private Interact interactComponent;
         [SerializeField] private SpriteRenderer spriteRenderer;
+        [SerializeField] private Transform spriteTransform;
         [SerializeField] private Transform spoonHoldPoint;
         
         [Header("Visuais por Estado")] 
         [SerializeField] private Color coneColor = Color.yellow;
         [SerializeField] private Color iceCreamColor = new Color(1f, 0.5f, 0.8f);
+        [SerializeField] private Vector3 coneSpriteScale = new Vector3(1f, 2f, 1f);
+        [SerializeField] private Vector3 iceCreamSpriteScale = new Vector3(1f, 1f, 1f);
+        [SerializeField] private float coneGroundCheckY = -1;
+        [SerializeField] private float iceCreamGroundCheckY = -0.5f;
         
         private InputAction _interactAction;
         private InputAction _jumpAction;
@@ -187,13 +192,35 @@ namespace Player
 
         private void ApplyStateVisuals(PlayerStateType stateType)
         {
-            if (!spriteRenderer) return;
-            spriteRenderer.color = stateType switch
+            if (spriteRenderer)
             {
-                PlayerStateType.Cone => coneColor,
-                PlayerStateType.IceCream => iceCreamColor,
-                _ => Color.white
-            };
+                spriteRenderer.color = stateType switch
+                {
+                    PlayerStateType.Cone => coneColor,
+                    PlayerStateType.IceCream => iceCreamColor,
+                    _ => Color.white
+                };
+            }
+
+            if (spriteRenderer)
+            {
+                spriteTransform.localScale = stateType switch
+                {
+                    PlayerStateType.Cone => coneSpriteScale,
+                    PlayerStateType.IceCream => iceCreamSpriteScale,
+                    _ => Vector3.one
+                };
+            }
+
+            if (groundCheckPoint)
+            {
+                groundCheckPoint.localPosition = new Vector3(0f, stateType switch
+                {
+                    PlayerStateType.Cone => coneGroundCheckY,
+                    PlayerStateType.IceCream => iceCreamGroundCheckY,
+                    _ => -0.5f
+                }, 0f);
+            }
         }
     }
 }
