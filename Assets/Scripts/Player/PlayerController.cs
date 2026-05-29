@@ -84,7 +84,7 @@ namespace Player
 
             HandleInput();
             
-            CurrentState.Execute(this);
+            CurrentState?.Execute(this);
         }
 
         private void FixedUpdate()
