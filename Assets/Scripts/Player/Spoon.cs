@@ -72,6 +72,8 @@ namespace Player
         
         private void OnCarriedChanged(bool previous, bool current)
         {
+            var col = GetComponent<Collider2D>();
+            if (col) col.enabled = !current;
             if (_rb) _rb.bodyType = current ? RigidbodyType2D.Kinematic : RigidbodyType2D.Dynamic;
         }
 
