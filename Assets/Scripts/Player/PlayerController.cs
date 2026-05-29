@@ -202,7 +202,7 @@ namespace Player
                 };
             }
 
-            if (spriteRenderer)
+            if (spriteTransform)
             {
                 spriteTransform.localScale = stateType switch
                 {
