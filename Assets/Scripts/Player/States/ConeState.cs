@@ -22,7 +22,7 @@ namespace Player.States
 
             if (player.InteractInputThisFrame)
             {
-                if (!player.CarriedSpoon)
+                if (player.CarriedSpoon)
                 {
                     player.CarriedSpoon.Drop();
                     player.SetCarriedSpoon(null);
