@@ -54,33 +54,39 @@ namespace Player
 
             _rb.MovePosition(Vector2.Lerp(_rb.position, _holdPoint.position, followSpeed * Time.fixedDeltaTime));
         }
-
+        
         public void Interact(PlayerController interactor)
         {
-            if (!IsOwner) return;
+            RequestPickupRpc(interactor.OwnerClientId);
+        }
 
-            if (_isCarried.Value)
-            {
-                OnSpoonInteractedRpc(interactor.OwnerClientId);
-                return;
-            }
-
-            if (interactor.CurrentState != interactor.ConeState) return;
-
-            AttachTo(interactor);
+        [Rpc(SendTo.Owner)]
+        private void RequestPickupRpc(ulong interactorClientId)
+        {
+            NetworkObject.ChangeOwnership(interactorClientId);
+            AttachToRpc(interactorClientId);
         }
         
+        [Rpc(SendTo.Everyone)]
+        private void AttachToRpc(ulong newOwnerClientId)
+        {
+            if (NetworkManager.Singleton.LocalClientId != newOwnerClientId) return;
+
+            var players = FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
+            foreach (var player in players)
+            {
+                AttachTo(player);
+                return;
+            }
+        }
+        
+        
+
         private void OnCarriedChanged(bool previous, bool current)
         {
             foreach (var col in GetComponents<Collider2D>())
                 col.enabled = !current;
             if (_rb) _rb.bodyType = current ? RigidbodyType2D.Kinematic : RigidbodyType2D.Dynamic;
-        }
-
-        [Rpc(SendTo.Everyone)]
-        private void OnSpoonInteractedRpc(ulong interactorClientId)
-        {
-            Debug.Log("[Spoon] Jogador " + interactorClientId + " interagiu com a colher");
         }
     }
 }
