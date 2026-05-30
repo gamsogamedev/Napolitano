@@ -6,6 +6,7 @@ namespace Player
     public class Spoon : NetworkBehaviour, IInteractable
     {
         [SerializeField] private float followSpeed = 20f;
+        [SerializeField] private float rotationSpeed = 100f;
 
         private readonly NetworkVariable<bool> _isCarried = new(
             false,
@@ -52,7 +53,14 @@ namespace Player
         {
             if (!IsOwner || !_isCarried.Value || !_holdPoint) return;
 
-            _rb.MovePosition(Vector2.Lerp(_rb.position, _holdPoint.position, followSpeed * Time.fixedDeltaTime));
+            _rb.MovePosition(_holdPoint.position);
+
+            var mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            var direction = (mouseWorld - _holdPoint.position).normalized;
+            var targetAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90f;
+            var currentAngle = _rb.rotation;
+            var newAngle = Mathf.MoveTowardsAngle(currentAngle, targetAngle, rotationSpeed * Time.fixedDeltaTime);
+            _rb.MoveRotation(newAngle);
         }
 
         public void Interact(PlayerController interactor)
@@ -61,7 +69,7 @@ namespace Player
             {
                 Drop();
                 return;
-;           }
+            }
 
             RequestPickupRpc(interactor.OwnerClientId);
         }
