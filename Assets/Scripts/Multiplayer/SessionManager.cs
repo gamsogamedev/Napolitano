@@ -52,12 +52,21 @@ public class SessionManager : Singleton<SessionManager>
         return new Dictionary<string, PlayerProperty>{{playerNamePropertyKey, playerNameProperty}};
     }
 
-    public async UniTask CreateSessionAsHost() 
+    async UniTask<Dictionary<string, PlayerProperty>> GetPlayerPropertiesAsyncWithName(string playerName)
+    {
+        
+        var playerNameProperty = new PlayerProperty(playerName, VisibilityPropertyOptions.Member);
+        await UniTask.CompletedTask;
+        
+        return new Dictionary<string, PlayerProperty>{{playerNamePropertyKey, playerNameProperty}};
+    }
+
+    public async UniTask CreateSessionAsHost(string playerName) 
     {
         try 
         {
-            var playerProperties = await GetPlayerPropertiesAsync();
-
+            var playerProperties = await GetPlayerPropertiesAsyncWithName(playerName);
+            
             var options = new SessionOptions()
             {
                 MaxPlayers = 2,
@@ -75,11 +84,11 @@ public class SessionManager : Singleton<SessionManager>
         }
     }
 
-    public async UniTask JoinSessionByCode(string code) 
+    public async UniTask JoinSessionByCode(string code, string playerName) 
     {
         try 
         {
-            var playerProperties = await GetPlayerPropertiesAsync();
+            var playerProperties = await GetPlayerPropertiesAsyncWithName(playerName);
 
             var joinOptions = new JoinSessionOptions()
             {

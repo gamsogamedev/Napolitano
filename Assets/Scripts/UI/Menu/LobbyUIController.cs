@@ -8,12 +8,20 @@ using Unity.Netcode;
 public class LobbyUIController : MonoBehaviour
 {
     [Header("UI Elements")]
+    [SerializeField] private TextMeshProUGUI statusLabel;
+    [SerializeField] private Button exitGameButton;
+
+    [Header("Host Buttons")]
     [SerializeField] private Button createSessionButton;
+    [SerializeField] private Button startGameButton;
+    
+    [Header("Client Buttons")]
     [SerializeField] private TMP_InputField joinCodeInput;
     [SerializeField] private Button joinSessionButton;
-    [SerializeField] private TextMeshProUGUI statusLabel;
-    [SerializeField] private Button startGameButton;
-    [SerializeField] private Button exitGameButton;
+    
+    [Header("Player Data")]
+    [SerializeField] private TMP_InputField playerNameInput;
+    
     [Header("Nome da sua cena")]
     [SerializeField] private string gameSceneName = "GameScene";
     
@@ -54,10 +62,18 @@ public class LobbyUIController : MonoBehaviour
 
         private async void OnCreateSessionClicked()
         {
+
+            var playerName = playerNameInput.text.Trim();
+            if (string.IsNullOrEmpty(playerName))
+            {
+                statusLabel.text = "Escreva o seu nome para criar uma sala";
+                return;
+            }
+            
             statusLabel.text = "Criando sessão...";
             SetUIInteractable(false);
 
-            await SessionManager.Instance.CreateSessionAsHost();
+            await SessionManager.Instance.CreateSessionAsHost(playerNameInput.text.Trim());
 
             if (SessionManager.Instance.ActiveSession != null)
             {
@@ -80,11 +96,18 @@ public class LobbyUIController : MonoBehaviour
                 statusLabel.text = "Codigo invalido";
                 return;
             }
+            
+            var playerName = playerNameInput.text.Trim();
+            if (string.IsNullOrEmpty(playerName))
+            {
+                statusLabel.text = "Escreva o seu nome para criar uma sala";
+                return;
+            }
 
             statusLabel.text = "Joining Session...";
             SetUIInteractable(false);
 
-            await SessionManager.Instance.JoinSessionByCode(code);
+            await SessionManager.Instance.JoinSessionByCode(code, playerName);
 
             if (SessionManager.Instance.ActiveSession != null)
             {
