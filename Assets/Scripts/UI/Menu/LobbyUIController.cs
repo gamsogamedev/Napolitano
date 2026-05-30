@@ -54,7 +54,7 @@ public class LobbyUIController : MonoBehaviour
 
         private async void OnCreateSessionClicked()
         {
-            statusLabel.text = "Criando sessao...";
+            statusLabel.text = "Criando sessão...";
             SetUIInteractable(false);
 
             await SessionManager.Instance.CreateSessionAsHost();
@@ -67,7 +67,7 @@ public class LobbyUIController : MonoBehaviour
             }
             else
             {
-                statusLabel.text = "Falha ao criar sessao";
+                statusLabel.text = "Falha ao criar sessão";
                 SetUIInteractable(true);
             }
         }
