@@ -1,5 +1,6 @@
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Player
 {
@@ -55,7 +56,7 @@ namespace Player
 
             _rb.MovePosition(_holdPoint.position);
 
-            var mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            var mouseWorld = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
             var direction = (mouseWorld - _holdPoint.position).normalized;
             var targetAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90f;
             var currentAngle = _rb.rotation;
