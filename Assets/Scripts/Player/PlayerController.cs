@@ -34,8 +34,20 @@ namespace Player
         [Header("Referências")] 
         [SerializeField] private Interact interactComponent;
         [SerializeField] private SpriteRenderer spriteRenderer;
+        [SerializeField] private Transform spriteTransform;
         [SerializeField] private Transform spoonHoldPoint;
-
+        [SerializeField] private GameObject spoonPrefab;
+        
+        public Spoon CarriedSpoon { get; private set; }
+        
+        [Header("Visuais por Estado")] 
+        [SerializeField] private Color coneColor = Color.yellow;
+        [SerializeField] private Color iceCreamColor = new Color(1f, 0.5f, 0.8f);
+        [SerializeField] private Vector3 coneSpriteScale = new Vector3(1f, 2f, 1f);
+        [SerializeField] private Vector3 iceCreamSpriteScale = new Vector3(1f, 1f, 1f);
+        [SerializeField] private float coneGroundCheckY = -1;
+        [SerializeField] private float iceCreamGroundCheckY = -0.5f;
+        
         private InputAction _interactAction;
         private InputAction _jumpAction;
         private InputAction _moveAction;
@@ -80,7 +92,7 @@ namespace Player
 
             HandleInput();
             
-            CurrentState.Execute(this);
+            CurrentState?.Execute(this);
         }
 
         private void FixedUpdate()
@@ -124,6 +136,16 @@ namespace Player
                 Debug.LogError("[PlayerController] InputActionAsset não atribuído no Inspector!");
             }
 
+            if (spoonPrefab != null)
+            {
+                var spoonObj = Instantiate(spoonPrefab, spoonHoldPoint.position, Quaternion.identity);
+                var spoonNet = spoonObj.GetComponent<NetworkObject>();
+                spoonNet.SpawnWithOwnership(OwnerClientId);
+
+                CarriedSpoon = spoonObj.GetComponent<Spoon>();
+                CarriedSpoon.AttachTo(this);
+            }
+            
             ChangeState(ConeState);
         }
 
@@ -140,9 +162,18 @@ namespace Player
         {
             if (newState == null) return;
 
+            if (newState == IceCreamState && CarriedSpoon)
+            {
+                CarriedSpoon.Drop();
+                CarriedSpoon = null;
+            }
+            
             CurrentState?.ExitState(this);
             CurrentState = newState;
             CurrentState.EnterState(this);
+
+            var stateType = GetStateType(newState);
+            ApplyStateVisuals(stateType);
 
             if (IsOwner)
                 _networkedState.Value = GetStateType(newState);
@@ -159,6 +190,8 @@ namespace Player
             if (directionX != 0) spriteRenderer.flipX = directionX < 0;
         }
 
+        public void SetCarriedSpoon(Spoon spoon) => CarriedSpoon = spoon;
+        
         public bool IsGrounded()
         {
             if (!groundCheckPoint) return false;
@@ -180,7 +213,38 @@ namespace Player
 
         private void ApplyStateVisuals(PlayerStateType stateType)
         {
-            // TODO: trocar sprites/tamanho do collider conforme o estado
+            if (spriteRenderer)
+            {
+                spriteRenderer.color = stateType switch
+                {
+                    PlayerStateType.Cone => coneColor,
+                    PlayerStateType.IceCream => iceCreamColor,
+                    _ => Color.white
+                };
+            }
+
+            if (spriteTransform)
+            {
+                spriteTransform.localScale = stateType switch
+                {
+                    PlayerStateType.Cone => coneSpriteScale,
+                    PlayerStateType.IceCream => iceCreamSpriteScale,
+                    _ => Vector3.one
+                };
+            }
+
+            if (groundCheckPoint)
+            {
+                groundCheckPoint.localPosition = new Vector3(0f, stateType switch
+                {
+                    PlayerStateType.Cone => coneGroundCheckY,
+                    PlayerStateType.IceCream => iceCreamGroundCheckY,
+                    _ => -0.5f
+                }, 0f);
+            }
+            
+            if (coneCollider) coneCollider.enabled = stateType == PlayerStateType.Cone;
+            if (iceCreamCollider) iceCreamCollider.enabled = stateType == PlayerStateType.IceCream;
         }
     }
 }
