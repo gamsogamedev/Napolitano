@@ -1,61 +1,150 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityUtils;
 
-public class ModalManager : Singleton<ModalManager>
+public class ModalManager : MonoBehaviour
 {
-    [Header("UI Elements")]
-    [SerializeField] private GameObject modalPanel;
-    [SerializeField] private TextMeshProUGUI titleText;
-    [SerializeField] private TextMeshProUGUI messageText;
-    
-    [Header("Buttons")]
-    [SerializeField] private Button confirmButton;
-    [SerializeField] private TextMeshProUGUI confirmButtonText;
-    
-    [SerializeField] private Button cancelButton;
-    [SerializeField] private TextMeshProUGUI cancelButtonText;
-    
-    private void Start()
-    {
-        modalPanel.SetActive(false);
-    }
+    #region UIElements
 
-    public void ShowModal(ModalDetails modalDetails)
-    {
-        titleText.text = modalDetails.titleText;
-        messageText.text = modalDetails.messageText;
+        [Header("UI Elements")]
+        [SerializeField] private GameObject modalPanel;
+        [SerializeField] private GameObject headerGameObject;
+        [SerializeField] private GameObject contentGameObject;
+        [SerializeField] private GameObject footerGameObject;
+
+        [Header("Header")]
+        [SerializeField] private TextMeshProUGUI titleText;
         
-        confirmButton.onClick.RemoveAllListeners();
-        confirmButtonText.text = modalDetails.confirmText;
-        confirmButton.onClick.AddListener(() =>
-        {
-            modalDetails.onConfirm?.Invoke();
-            CloseModal();
-        });
 
-        if (!string.IsNullOrEmpty(modalDetails.cancelText))
+        [Header("Horizontal Layout")]
+        [SerializeField] private GameObject horizontalLayoutGameObject;
+        [SerializeField] private GameObject horizontalImageGameObject;
+        [SerializeField] private Image horizontalImage;
+        [SerializeField] private TextMeshProUGUI horizontalMessageText;
+        
+        [Header("Vertical Layout")]
+        [SerializeField] private GameObject verticalLayoutGameObject;
+        [SerializeField] private GameObject verticalImageGameObject;
+        [SerializeField] private Image verticalImage;
+        [SerializeField] private TextMeshProUGUI verticalMessageText;
+        
+        [Header("Footer")]
+        [SerializeField] private Button confirmButton;
+        [SerializeField] private TextMeshProUGUI confirmButtonText;
+        [SerializeField] private Button cancelButton;
+        [SerializeField] private TextMeshProUGUI cancelButtonText;
+        [SerializeField] private Button altButton;
+        [SerializeField] private TextMeshProUGUI alternativeMessageText;
+
+    #endregion
+
+    #region Singleton
+
+        public static ModalManager Instance { get; private set; }
+
+        private void Awake()
         {
-            cancelButton.onClick.RemoveAllListeners();
-            cancelButtonText.text = modalDetails.cancelText;
-            cancelButton.onClick.AddListener(() =>
-                {
-                    modalDetails.onCancel?.Invoke();
-                    CloseModal();
-                }
-            );
+            if (Instance != null && Instance != this) Destroy(gameObject);
+            
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
         }
-        else
-        {
-            cancelButton.gameObject.SetActive(false);
-        }
+
+    #endregion
+    
+    
+    public void ShowModal(ModalDetails modalDetails, bool autoCloseConfirm = true,  bool autoCloseCancel = true, bool autoCloseAlt = true)
+    {
+        ConfigureHeader(modalDetails.title);
+        
+        ConfigureLayout(modalDetails);
+        
+        ConfigureButton(confirmButton, confirmButtonText, modalDetails.confirmText, modalDetails.onConfirm, autoCloseConfirm);
+        ConfigureButton(cancelButton, cancelButtonText, modalDetails.cancelText, modalDetails.onCancel, autoCloseCancel);
+        ConfigureButton(altButton, alternativeMessageText, modalDetails.alternativeText, modalDetails.onAlternative, autoCloseAlt);
         
         modalPanel.SetActive(true);
     }
 
-    //Funcao meio inutil agr, mas depois vamos ter audio
-    private void CloseModal()
+    private void ConfigureHeader(string titleDetails)
+    {
+        if (!string.IsNullOrEmpty(titleDetails))
+        {
+            headerGameObject.SetActive(true);
+            titleText.text = titleDetails;
+        }
+        else
+        {
+            headerGameObject.SetActive(false);
+        }
+    }
+
+    private void ConfigureLayout(ModalDetails modalDetails)
+    {
+        horizontalLayoutGameObject.SetActive(false);
+        verticalLayoutGameObject.SetActive(false);
+
+        switch (modalDetails.layout)
+        {
+            case ModalLayout.Horizontal:
+            {
+                horizontalLayoutGameObject.SetActive(true);
+                horizontalMessageText.text = modalDetails.message;
+
+                if (modalDetails.contentImage != null)
+                {
+                    horizontalImageGameObject.SetActive(true);
+                    horizontalImage.sprite = modalDetails.contentImage;
+                }
+                else
+                {
+                    horizontalImageGameObject.SetActive(false);
+                }
+
+                break;
+            }
+            case ModalLayout.Vertical:
+            {
+                verticalLayoutGameObject.SetActive(true);
+                verticalMessageText.text = modalDetails.message;
+
+                if (modalDetails.contentImage != null)
+                {
+                    verticalImageGameObject.SetActive(true);
+                    verticalImage.sprite = modalDetails.contentImage;
+                }
+                else
+                {
+                    verticalImageGameObject.SetActive(false);
+                }
+
+                break;
+            }
+        }
+    }
+    
+    private void ConfigureButton(Button button, TextMeshProUGUI textContainer, string contentText, Action buttonAction, bool autoClose)
+    {
+        if (!string.IsNullOrEmpty(contentText))
+        {
+            button.gameObject.SetActive(true);
+            textContainer.text = contentText;
+            
+            button.onClick.RemoveAllListeners();
+            button.onClick.AddListener(() =>
+            {
+                buttonAction?.Invoke();
+                if(autoClose) CloseModal();
+            });
+        }
+        else
+        {
+            button.gameObject.SetActive(false);
+        }
+    }
+    
+    public void CloseModal()
     {
         modalPanel.SetActive(false);
     }

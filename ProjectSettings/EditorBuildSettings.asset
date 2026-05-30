@@ -6,11 +6,20 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/Menus/MainMenu.unity
+    guid: 54178540f63a92bdbb4f9cb803151e45
+  - enabled: 1
+    path: Assets/Scenes/Menus/LobbyMultiplayer.unity
+    guid: 2c79d776c3db518cc82b40575520526d
+  - enabled: 1
+    path: Assets/Scenes/Menus/LevelSelector.unity
+    guid: 48a7e2bb8b2153551b214535707f3edf
+  - enabled: 1
     path: Assets/Scenes/SampleScene.unity
     guid: 8c9cfa26abfee488c85f1582747f6a02
   - enabled: 1
-    path: Assets/Scenes/LobbyMultiplayer.unity
-    guid: 2c79d776c3db518cc82b40575520526d
+    path: Assets/Scenes/Levels/Level-1.unity
+    guid: 7bd5f2fbd32be0d0695b037e8ee1c741
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

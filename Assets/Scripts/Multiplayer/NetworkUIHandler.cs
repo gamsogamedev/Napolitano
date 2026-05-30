@@ -24,12 +24,12 @@ public class NetworkUIHandler : MonoBehaviour
     {
         ModalManager.Instance.ShowModal(new ModalDetails
         {
-            titleText = "Erro de Network",
-            messageText = "Você foi desconectado da sessão.",
+            title = "Erro de Network",
+            message = "Você foi desconectado da sessão.",
             confirmText = "Voltar para o menu",
             onConfirm = () => 
             {
-                UnityEngine.SceneManagement.SceneManager.LoadScene("SampleScene");
+                UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu");
             }
         });
     }
@@ -38,12 +38,12 @@ public class NetworkUIHandler : MonoBehaviour
     {
         ModalManager.Instance.ShowModal(new ModalDetails
         {
-            titleText = "Erro de Network",
-            messageText = "Seu amigo perdeu conexão com o servidor.",
+            title = "Erro de Network",
+            message = "Seu amigo perdeu conexão com o servidor.",
             confirmText = "Voltar para o menu",
             onConfirm = () => 
             {
-                UnityEngine.SceneManagement.SceneManager.LoadScene("SampleScene");
+                UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu");
             }
         });
     }
