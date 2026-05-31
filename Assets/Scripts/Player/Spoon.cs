@@ -6,9 +6,9 @@ namespace Player
 {
     public class Spoon : NetworkBehaviour, IInteractable
     {
-        [SerializeField] private float rotationSpeed = 100f;
-        [SerializeField] private float positionSmoothTime = 0.12f;
-
+        [SerializeField] private float rotationSmoothTime = 0.15f;
+        private float _rotationVelocity;
+        
         private readonly NetworkVariable<bool> _isCarried = new(
             false,
             NetworkVariableReadPermission.Everyone,
@@ -39,7 +39,7 @@ namespace Player
         public void AttachTo(PlayerController player)
         {
             _holdPoint = player.SpoonHoldPoint;
-            _positionVelocity = Vector2.zero;
+            _rotationVelocity = -0f;
             _isCarried.Value = true;
             player.SetCarriedSpoon(this);
         }
@@ -55,20 +55,14 @@ namespace Player
         private void FixedUpdate()
         {
             if (!IsOwner || !_isCarried.Value || !_holdPoint) return;
-
-            var smoothed = Vector2.SmoothDamp(
-                _rb.position,
-                _holdPoint.position,
-                ref _positionVelocity,
-                positionSmoothTime
-            );
-            _rb.MovePosition(smoothed);
+            
+            _rb.MovePosition(_holdPoint.position);
 
             var mouseWorld = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
             var direction = (mouseWorld - _holdPoint.position).normalized;
             var targetAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90f;
             var currentAngle = _rb.rotation;
-            var newAngle = Mathf.MoveTowardsAngle(currentAngle, targetAngle, rotationSpeed * Time.fixedDeltaTime);
+            var newAngle = Mathf.SmoothDampAngle(currentAngle, targetAngle, ref _rotationVelocity, rotationSmoothTime);
             _rb.MoveRotation(newAngle);
         }
         
