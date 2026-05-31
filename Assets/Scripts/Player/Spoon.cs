@@ -6,8 +6,8 @@ namespace Player
 {
     public class Spoon : NetworkBehaviour, IInteractable
     {
-        [SerializeField] private float followSpeed = 20f;
         [SerializeField] private float rotationSpeed = 100f;
+        [SerializeField] private float positionSmoothTime = 0.12f;
 
         private readonly NetworkVariable<bool> _isCarried = new(
             false,
@@ -17,6 +17,7 @@ namespace Player
 
         private Transform _holdPoint;
         private Rigidbody2D _rb;
+        private Vector2 _positionVelocity;
 
         private void Awake()
         {
@@ -38,6 +39,7 @@ namespace Player
         public void AttachTo(PlayerController player)
         {
             _holdPoint = player.SpoonHoldPoint;
+            _positionVelocity = Vector2.zero;
             _isCarried.Value = true;
             player.SetCarriedSpoon(this);
         }
@@ -54,7 +56,13 @@ namespace Player
         {
             if (!IsOwner || !_isCarried.Value || !_holdPoint) return;
 
-            _rb.MovePosition(_holdPoint.position);
+            var smoothed = Vector2.SmoothDamp(
+                _rb.position,
+                _holdPoint.position,
+                ref _positionVelocity,
+                positionSmoothTime
+            );
+            _rb.MovePosition(smoothed);
 
             var mouseWorld = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
             var direction = (mouseWorld - _holdPoint.position).normalized;
