@@ -6,7 +6,7 @@ namespace Player
 {
     public class Spoon : NetworkBehaviour, IInteractable
     {
-        [SerializeField] private float rotationSmoothTime = 0.15f;
+        [SerializeField] private float rotationSmoothTime = 0.4f;
         private float _rotationVelocity;
         
         private readonly NetworkVariable<bool> _isCarried = new(
