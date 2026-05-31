@@ -37,13 +37,13 @@ namespace Player
         [SerializeField] private Transform spriteTransform;
         [SerializeField] private Transform spoonHoldPoint;
         [SerializeField] private GameObject spoonPrefab;
+        [SerializeField] private NetworkObject conePrefab;
+        [SerializeField] private SpriteRenderer coneSpriteRenderer;
         
         public Spoon CarriedSpoon { get; private set; }
         
         [Header("Visuais por Estado")] 
-        [SerializeField] private Color coneColor = Color.yellow;
         [SerializeField] private Color iceCreamColor = new Color(1f, 0.5f, 0.8f);
-        [SerializeField] private Vector3 coneSpriteScale = new Vector3(1f, 2f, 1f);
         [SerializeField] private Vector3 iceCreamSpriteScale = new Vector3(1f, 1f, 1f);
         [SerializeField] private float coneGroundCheckY = -1;
         [SerializeField] private float iceCreamGroundCheckY = -0.5f;
@@ -162,6 +162,12 @@ namespace Player
         {
             if (newState == null) return;
 
+            if (CurrentState == ConeState && newState == IceCreamState && IsOwner && conePrefab)
+            {
+                var coneNet = Instantiate(conePrefab, transform.position, Quaternion.identity);
+                coneNet.Spawn();
+            }
+
             if (newState == IceCreamState && CarriedSpoon)
             {
                 CarriedSpoon.Drop();
@@ -214,24 +220,13 @@ namespace Player
         private void ApplyStateVisuals(PlayerStateType stateType)
         {
             if (spriteRenderer)
-            {
-                spriteRenderer.color = stateType switch
-                {
-                    PlayerStateType.Cone => coneColor,
-                    PlayerStateType.IceCream => iceCreamColor,
-                    _ => Color.white
-                };
-            }
+                spriteRenderer.color = stateType == PlayerStateType.Spoon ? Color.white : iceCreamColor;
+            
+            if (coneSpriteRenderer)
+                coneSpriteRenderer.enabled = stateType == PlayerStateType.Cone;
 
             if (spriteTransform)
-            {
-                spriteTransform.localScale = stateType switch
-                {
-                    PlayerStateType.Cone => coneSpriteScale,
-                    PlayerStateType.IceCream => iceCreamSpriteScale,
-                    _ => Vector3.one
-                };
-            }
+                spriteTransform.localScale = stateType == PlayerStateType.Spoon ? Vector3.zero : iceCreamSpriteScale;
 
             if (groundCheckPoint)
             {
