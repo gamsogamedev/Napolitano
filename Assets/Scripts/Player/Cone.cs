@@ -1,3 +1,4 @@
+using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -15,31 +16,26 @@ namespace Player
         [Rpc(SendTo.Owner)]
         private void RequestPickupRpc(ulong interactorClientId)
         {
-            var players = FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
-            foreach (var player in players)
-            {
-                if (player.OwnerClientId == interactorClientId && player.CurrentState == player.IceCreamState)
-                {
-                    NotifyCollectedRpc(interactorClientId);
-                    NetworkObject.Despawn();
-                    return;
-                }
-            }
+            var player = FindObjectsByType<PlayerController>(FindObjectsSortMode.None)
+                .FirstOrDefault(p => p.OwnerClientId == interactorClientId && p.CurrentState == p.IceCreamState);
+
+            if (!player) return;
+            
+            NotifyCollectedRpc(interactorClientId);
+            NetworkObject.Despawn();
         }
 
         [Rpc(SendTo.Everyone)]
-        private void NotifyCollectedRpc(ulong collectorClient)
+        private void NotifyCollectedRpc(ulong collectorClientId)
         {
-            if (NetworkManager.Singleton.LocalClientId != collectorClient) return;
+            if (NetworkManager.Singleton.LocalClientId != collectorClientId) return;
             
             var players = FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
             foreach (var player in players)
             {
-                if (player.OwnerClientId == collectorClient)
-                {
-                    player.ChangeState(player.ConeState);
-                    return;
-                }
+                if (player.OwnerClientId != collectorClientId) continue;
+                player.ChangeState(player.ConeState);
+                return;
             }
         }
     }
