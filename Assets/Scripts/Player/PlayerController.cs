@@ -8,7 +8,7 @@ namespace Player
     [RequireComponent(typeof(Rigidbody2D))]
     public class PlayerController : NetworkBehaviour
     {
-        private enum PlayerStateType
+        public enum PlayerStateType
         {
             Cone,
             IceCream,
@@ -70,6 +70,7 @@ namespace Player
         public Vector2 MoveInput { get; private set; }
         public float JumpForce => jumpForce;
         public IPlayerState CurrentState { get; private set; }
+        public PlayerStateType NetworkedStateType => _networkedState.Value;
 
         public bool JumpInputThisFrame => _jumpAction?.WasPressedThisFrame() ?? false;
         public bool InteractInputThisFrame => _interactAction?.WasPressedThisFrame() ?? false;
@@ -118,7 +119,7 @@ namespace Player
 
             if (!IsOwner)
             {
-                ApplyStateVisuals(_networkedState.Value);
+                ApplyStateConfigutarion(_networkedState.Value);
                 return;
             }
 
@@ -164,7 +165,8 @@ namespace Player
 
             if (CurrentState == ConeState && newState == IceCreamState && IsOwner && conePrefab)
             {
-                var coneNet = Instantiate(conePrefab, transform.position, Quaternion.identity);
+                var spawnPos = groundCheckPoint.position + new Vector3(0f, 0.75f, 0f);
+                var coneNet = Instantiate(conePrefab, spawnPos, Quaternion.identity);
                 coneNet.Spawn();
             }
 
@@ -179,7 +181,7 @@ namespace Player
             CurrentState.EnterState(this);
 
             var stateType = GetStateType(newState);
-            ApplyStateVisuals(stateType);
+            ApplyStateConfigutarion(stateType);
 
             if (IsOwner)
                 _networkedState.Value = GetStateType(newState);
@@ -214,10 +216,10 @@ namespace Player
 
         private void OnNetworkedStateChanged(PlayerStateType oldState, PlayerStateType newState)
         {
-            if (!IsOwner) ApplyStateVisuals(newState);
+            if (!IsOwner) ApplyStateConfigutarion(newState);
         }
 
-        private void ApplyStateVisuals(PlayerStateType stateType)
+        private void ApplyStateConfigutarion(PlayerStateType stateType)
         {
             if (spriteRenderer)
                 spriteRenderer.color = stateType == PlayerStateType.Spoon ? Color.white : iceCreamColor;
@@ -226,7 +228,10 @@ namespace Player
                 coneSpriteRenderer.enabled = stateType == PlayerStateType.Cone;
 
             if (spriteTransform)
+            {
                 spriteTransform.localScale = stateType == PlayerStateType.Spoon ? Vector3.zero : iceCreamSpriteScale;
+                spriteTransform.localPosition = new Vector3(0f, stateType == PlayerStateType.Cone ? 1f : 0f, 0f);
+            }
 
             if (groundCheckPoint)
             {

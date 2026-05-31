@@ -6,6 +6,8 @@ namespace Player
 {
     public class Cone : NetworkBehaviour, IInteractable
     {
+        public bool CanInteract(PlayerController interactor) => interactor.CurrentState == interactor.IceCreamState;
+
         public void Interact(PlayerController interactor)
         {
             if (interactor.CurrentState != interactor.IceCreamState) return;
@@ -17,8 +19,9 @@ namespace Player
         private void RequestPickupRpc(ulong interactorClientId)
         {
             var player = FindObjectsByType<PlayerController>(FindObjectsSortMode.None)
-                .FirstOrDefault(p => p.OwnerClientId == interactorClientId && p.CurrentState == p.IceCreamState);
-
+                .FirstOrDefault(p => p.OwnerClientId == interactorClientId 
+                                     && p.NetworkedStateType == PlayerController.PlayerStateType.IceCream);
+            
             if (!player) return;
             
             NotifyCollectedRpc(interactorClientId);

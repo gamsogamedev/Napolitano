@@ -63,6 +63,8 @@ namespace Player
             var newAngle = Mathf.MoveTowardsAngle(currentAngle, targetAngle, rotationSpeed * Time.fixedDeltaTime);
             _rb.MoveRotation(newAngle);
         }
+        
+        public bool CanInteract(PlayerController interactor) => !_isCarried.Value == IsOwner;
 
         public void Interact(PlayerController interactor)
         {
