@@ -10,6 +10,7 @@ public class LobbyUIController : MonoBehaviour
     [Header("UI Elements")]
     [SerializeField] private TextMeshProUGUI statusLabel;
     [SerializeField] private Button exitGameButton;
+    [SerializeField] private TMP_InputField roomCodeInput;
 
     [Header("Host Buttons")]
     [SerializeField] private Button createSessionButton;
@@ -48,6 +49,7 @@ public class LobbyUIController : MonoBehaviour
     private void Start()
     {
         startGameButton.gameObject.SetActive(false);
+        roomCodeInput.gameObject.SetActive(false);
         networkManager = NetworkManager.Singleton;
     }
     
@@ -189,10 +191,13 @@ public class LobbyUIController : MonoBehaviour
                 if (currentPlayerCount == 2)
                 {
                     statusLabel.text = "Player 2 conectado";
-                }
+                    roomCodeInput.gameObject.SetActive(false);
+            }
                 else
                 {
-                    statusLabel.text = "Code: " + SessionManager.Instance.CurrentSessionCode;
+                    statusLabel.text = "Code: ";
+                    roomCodeInput.text = SessionManager.Instance.CurrentSessionCode;
+                    roomCodeInput.gameObject.SetActive(true);
                 }
             }
             else
