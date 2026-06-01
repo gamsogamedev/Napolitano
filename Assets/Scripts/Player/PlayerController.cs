@@ -140,7 +140,7 @@ namespace Player
             {
                 var spoonObj = Instantiate(spoonPrefab, spoonHoldPoint.position, Quaternion.identity);
                 var spoonNet = spoonObj.GetComponent<NetworkObject>();
-                spoonNet.SpawnWithOwnership(OwnerClientId);
+                spoonNet.SpawnWithOwnership(OwnerClientId, true);
 
                 CarriedSpoon = spoonObj.GetComponent<Spoon>();
                 CarriedSpoon.AttachTo(this);

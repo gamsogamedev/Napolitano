@@ -351,6 +351,10 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 817519896621769248, guid: c5b9c091382335f898b2f7396cadcd74, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1044856642018448142, guid: c5b9c091382335f898b2f7396cadcd74, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -499,6 +503,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ModalManagerCanvas
       objectReference: {fileID: 0}
+    - target: {fileID: 3222709180613299374, guid: c5b9c091382335f898b2f7396cadcd74, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3553467888232985281, guid: c5b9c091382335f898b2f7396cadcd74, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -547,9 +555,13 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -226
       objectReference: {fileID: 0}
+    - target: {fileID: 4571425722580426214, guid: c5b9c091382335f898b2f7396cadcd74, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5319885592237887205, guid: c5b9c091382335f898b2f7396cadcd74, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5508521691103321758, guid: c5b9c091382335f898b2f7396cadcd74, type: 3}
       propertyPath: m_AnchorMax.y

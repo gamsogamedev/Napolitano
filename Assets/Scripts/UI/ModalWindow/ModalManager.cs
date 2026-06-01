@@ -1,6 +1,7 @@
 using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class ModalManager : MonoBehaviour
@@ -53,6 +54,24 @@ public class ModalManager : MonoBehaviour
 
     #endregion
     
+    //TODO: GAMBIARRA PRO NAPOLITANO, TIRAR PRA BUILD DO PACKAGE
+    private bool hasButtons;
+
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneChange;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneChange;
+    }
+
+    private void OnSceneChange(Scene scene, LoadSceneMode mode)
+    {
+        CloseModal();
+    }
+    
     
     public void ShowModal(ModalDetails modalDetails, bool autoCloseConfirm = true,  bool autoCloseCancel = true, bool autoCloseAlt = true)
     {
@@ -60,9 +79,13 @@ public class ModalManager : MonoBehaviour
         
         ConfigureLayout(modalDetails);
         
+        hasButtons = false;
+        
         ConfigureButton(confirmButton, confirmButtonText, modalDetails.confirmText, modalDetails.onConfirm, autoCloseConfirm);
         ConfigureButton(cancelButton, cancelButtonText, modalDetails.cancelText, modalDetails.onCancel, autoCloseCancel);
         ConfigureButton(altButton, alternativeMessageText, modalDetails.alternativeText, modalDetails.onAlternative, autoCloseAlt);
+        
+        footerGameObject.SetActive(hasButtons);
         
         modalPanel.SetActive(true);
     }
@@ -118,6 +141,8 @@ public class ModalManager : MonoBehaviour
                 {
                     verticalImageGameObject.SetActive(false);
                 }
+                
+                if(modalDetails.message == null &&  !modalDetails.contentImage) contentGameObject.SetActive(false);
 
                 break;
             }
@@ -130,6 +155,8 @@ public class ModalManager : MonoBehaviour
         {
             button.gameObject.SetActive(true);
             textContainer.text = contentText;
+            
+            hasButtons = true;
             
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(() =>

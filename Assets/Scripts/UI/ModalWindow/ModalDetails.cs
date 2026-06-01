@@ -16,7 +16,7 @@ public class ModalDetails
     public ModalLayout layout = ModalLayout.Vertical;
 
     [Header("Botão Principal")]
-    public string confirmText = "Confirmar";
+    public string confirmText;
     public Action onConfirm;
 
     [Header("Botão Secundário")]
