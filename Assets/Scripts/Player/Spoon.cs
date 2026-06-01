@@ -77,7 +77,7 @@ namespace Player
             var newAngle = Mathf.SmoothDampAngle(currentAngle, targetAngle, ref _rotationVelocity, rotationSmoothTime);
             _rb.MoveRotation(newAngle);
 
-            _rotationalSpeed = (_rb.rotation - _previousAngle) / Time.fixedDeltaTime;
+            _rotationalSpeed = Mathf.DeltaAngle(_previousAngle, _rb.rotation) / Time.fixedDeltaTime;
             _previousAngle = _rb.rotation;
         }
 
