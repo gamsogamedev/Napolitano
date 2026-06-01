@@ -22,8 +22,8 @@ namespace Player
         private float _rotationalSpeed;
 
         [SerializeField] private Transform riderHoldPoint;
-        [SerializeField] public float baseLaunchSpeed = 20f;
-        [SerializeField] public float rotationLaunchMultiplier = 0.4f;
+        [SerializeField] public float baseLaunchSpeed = 1f;
+        [SerializeField] public float rotationLaunchMultiplier = 0.02f;
 
         private readonly NetworkVariable<ulong> _riderClientId = new(
             ulong.MaxValue,
@@ -132,7 +132,7 @@ namespace Player
         public void RequestExitSpoonRpc(ulong riderClientId)
         {
             if (_riderClientId.Value != riderClientId) return;
-            var facing = (Vector2)(Quaternion.Euler(0, 0, _rb.rotation) * Vector2.up);
+            var facing = (Vector2)transform.up;
             var speed = baseLaunchSpeed + Mathf.Abs(_rotationalSpeed) * rotationLaunchMultiplier;
             var launchVelocity = facing * speed;
             _riderClientId.Value = ulong.MaxValue;
@@ -194,7 +194,7 @@ namespace Player
         private void OnCarriedChanged(bool previous, bool current)
         {
             foreach (var col in GetComponents<Collider2D>())
-                col.enabled = !current;
+                col.isTrigger = current;
             if (_rb) _rb.bodyType = current ? RigidbodyType2D.Kinematic : RigidbodyType2D.Dynamic;
         }
     }
