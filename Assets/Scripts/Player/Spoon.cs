@@ -6,9 +6,9 @@ namespace Player
 {
     public class Spoon : NetworkBehaviour, IInteractable
     {
-        [SerializeField] private float followSpeed = 20f;
-        [SerializeField] private float rotationSpeed = 100f;
-
+        [SerializeField] private float rotationSmoothTime = 0.4f;
+        private float _rotationVelocity;
+        
         private readonly NetworkVariable<bool> _isCarried = new(
             false,
             NetworkVariableReadPermission.Everyone,
@@ -17,6 +17,7 @@ namespace Player
 
         private Transform _holdPoint;
         private Rigidbody2D _rb;
+        private Vector2 _positionVelocity;
 
         private void Awake()
         {
@@ -38,6 +39,7 @@ namespace Player
         public void AttachTo(PlayerController player)
         {
             _holdPoint = player.SpoonHoldPoint;
+            _rotationVelocity = -0f;
             _isCarried.Value = true;
             player.SetCarriedSpoon(this);
         }
@@ -53,16 +55,18 @@ namespace Player
         private void FixedUpdate()
         {
             if (!IsOwner || !_isCarried.Value || !_holdPoint) return;
-
+            
             _rb.MovePosition(_holdPoint.position);
 
             var mouseWorld = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
             var direction = (mouseWorld - _holdPoint.position).normalized;
             var targetAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90f;
             var currentAngle = _rb.rotation;
-            var newAngle = Mathf.MoveTowardsAngle(currentAngle, targetAngle, rotationSpeed * Time.fixedDeltaTime);
+            var newAngle = Mathf.SmoothDampAngle(currentAngle, targetAngle, ref _rotationVelocity, rotationSmoothTime);
             _rb.MoveRotation(newAngle);
         }
+        
+        public bool CanInteract(PlayerController interactor) => !_isCarried.Value == IsOwner;
 
         public void Interact(PlayerController interactor)
         {
