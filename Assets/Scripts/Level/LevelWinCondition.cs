@@ -17,8 +17,6 @@ public class LevelWinCondition : NetworkBehaviour, IInteractable
         //Isso disabilitaria o controle do jogador e removeria o player da cena, dps a gente faz um trigger pra rodar
         //uma animação na condição de vitoria do personagem entrando no cone de sorvete
         
-        Debug.Log("Interagindo");
-        
         SubmitWinInteractionRPC(NetworkManager.Singleton.LocalClientId);
     }
 

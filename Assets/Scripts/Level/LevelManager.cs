@@ -22,11 +22,13 @@ public class LevelManager : NetworkBehaviour
         }
         
         LevelWinCondition.OnLevelComplete += TriggerLevelComplete;
+        PlayerCollision.OnPlayerTookDamage += TriggerLeveFail;
     }
     
     public override void OnNetworkDespawn()
     {
         LevelWinCondition.OnLevelComplete -= TriggerLevelComplete;
+        PlayerCollision.OnPlayerTookDamage -= TriggerLeveFail;
     }
 
     private void SpawnPlayers(string sceneName, LoadSceneMode loadSceneMode, List<ulong> clientsCompleted, List<ulong> clientsTimedOut)
@@ -69,5 +71,33 @@ public class LevelManager : NetworkBehaviour
             });
         }
         
+    }
+
+    private void TriggerLeveFail(string playerName)
+    {
+        string customMessage = "Jogador " + playerName + " morreu!";
+
+        if (NetworkManager.Singleton.LocalClient.IsSessionOwner)
+        {
+            ModalManager.Instance.ShowModal(new ModalDetails
+            {
+                title = "Game Over",
+                message = customMessage,
+                confirmText = "Restart",
+                onConfirm = () =>
+                {
+                    NetworkManager.Singleton.SceneManager.LoadScene(SceneManager.GetActiveScene().name, LoadSceneMode.Single);
+                }
+            });
+        }
+        else
+        {
+            ModalManager.Instance.ShowModal(new ModalDetails
+                {
+                    title = "Game Over",
+                    message = customMessage + " Esperando o host...",
+                }
+            );
+        }
     }
 }
