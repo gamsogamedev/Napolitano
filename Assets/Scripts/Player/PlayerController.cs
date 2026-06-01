@@ -167,7 +167,7 @@ namespace Player
             {
                 var spawnPos = groundCheckPoint.position + new Vector3(0f, 0.75f, 0f);
                 var coneNet = Instantiate(conePrefab, spawnPos, Quaternion.identity);
-                coneNet.Spawn();
+                coneNet.Spawn(true);
             }
 
             if (newState == IceCreamState && CarriedSpoon)

@@ -66,8 +66,6 @@ public class LevelManager : NetworkBehaviour
             {
                 title = "Level " +  levelNumber + " Concluído!",
                 message = "Esperando o host...",
-                
-                cancelText = "Fechar",
             });
         }
         
