@@ -10,7 +10,12 @@ public class LevelWinCondition : NetworkBehaviour, IInteractable
     private HashSet<ulong> playersWon = new HashSet<ulong>();
     
     public static event Action OnLevelComplete;
-    
+
+    public bool CanInteract(PlayerController interactor)
+    {
+        throw new NotImplementedException();
+    }
+
     public void Interact(PlayerController interactor)
     {
         //TODO: adicionar um "DisableController: para o interactor
