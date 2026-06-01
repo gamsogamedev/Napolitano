@@ -199,6 +199,19 @@ namespace Player
         }
 
         public void SetCarriedSpoon(Spoon spoon) => CarriedSpoon = spoon;
+
+        public void EnterSpoonAsRider(Transform spoonTransform, Spoon spoon)
+        {
+            SpoonState.SetSpoonPosition(spoonTransform);
+            SpoonState.SetRiderMode(spoon);
+            ChangeState(SpoonState);
+        }
+
+        public void ExitSpoonWithVelocity(Vector2 launchVelocity)
+        {
+            ChangeState(IceCreamState);
+            Rb.linearVelocity = launchVelocity;
+        }
         
         public bool IsGrounded()
         {
