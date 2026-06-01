@@ -23,7 +23,7 @@ namespace Player
 
         [SerializeField] private Transform riderHoldPoint;
         [SerializeField] public float baseLaunchSpeed = 1f;
-        [SerializeField] public float rotationLaunchMultiplier = 0.02f;
+        [SerializeField] public float launchMultiplier = 1f;
 
         private readonly NetworkVariable<ulong> _riderClientId = new(
             ulong.MaxValue,
@@ -132,9 +132,15 @@ namespace Player
         public void RequestExitSpoonRpc(ulong riderClientId)
         {
             if (_riderClientId.Value != riderClientId) return;
-            var facing = (Vector2)transform.up;
-            var speed = baseLaunchSpeed + Mathf.Abs(_rotationalSpeed) * rotationLaunchMultiplier;
-            var launchVelocity = facing * speed;
+            var toRider = (Vector2)riderHoldPoint.position - (Vector2)transform.position;
+            var radius = toRider.magnitude;
+            var radialDir = radius > 0f ? toRider / radius : (Vector2)transform.up;
+            var tangentialDir = new Vector2(-radialDir.y, radialDir.x) * Mathf.Sign(_rotationalSpeed);
+            var omegaRad = _rotationalSpeed * Mathf.Deg2Rad;
+            var tangentialSpeed = Mathf.Abs(omegaRad) * radius * launchMultiplier;
+            var launchVelocity = tangentialSpeed >= baseLaunchSpeed
+                ? tangentialDir * tangentialSpeed
+                : radialDir * baseLaunchSpeed;
             _riderClientId.Value = ulong.MaxValue;
             NotifyExitSpoonRpc(riderClientId, launchVelocity);
         }
