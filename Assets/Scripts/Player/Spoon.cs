@@ -97,7 +97,7 @@ namespace Player
                 return;
             }
 
-            if (!_isCarried.Value && _riderClientId.Value == ulong.MaxValue &&
+            if (_isCarried.Value && _riderClientId.Value == ulong.MaxValue &&
                 interactor.CurrentState == interactor.IceCreamState)
             {
                 RequestEnterSpoonRpc(interactor.OwnerClientId);
@@ -122,6 +122,7 @@ namespace Player
             var players = FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
             foreach (var player in players)
             {
+                if (player.OwnerClientId != riderClientId) continue;
                 player.EnterSpoonAsRider(riderHoldPoint, this);
                 return;
             }
