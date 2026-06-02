@@ -2,15 +2,23 @@ using System;
 using Unity.Netcode;
 using UnityEngine;
 
-public class PlayerCollision : MonoBehaviour
+public class PlayerCollision : NetworkBehaviour
 {
     public static event Action<string> OnPlayerTookDamage;
     
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        if (!IsOwner) return;
+        
         if (collision.gameObject.CompareTag("Hazard"))
         {
-            OnPlayerTookDamage?.Invoke(SessionManager.Instance.ActiveSession.CurrentPlayer.Properties["playerName"].Value);
+            BroadcastDamageRpc(SessionManager.Instance.ActiveSession.CurrentPlayer.Properties["playerName"].Value);
         }
+    }
+    
+    [Rpc(SendTo.Everyone)]
+    private void BroadcastDamageRpc(string playerName)
+    {
+        OnPlayerTookDamage?.Invoke(playerName);
     }
 }
