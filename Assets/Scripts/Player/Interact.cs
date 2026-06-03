@@ -29,7 +29,7 @@ namespace Player
             _contactFilter = new ContactFilter2D();
             _contactFilter.SetLayerMask(interactableLayer);
             _contactFilter.useLayerMask = true;
-            _contactFilter.useTriggers = true; 
+            _contactFilter.useTriggers = false; 
         }
 
         public void CheckCollision()
@@ -50,6 +50,7 @@ namespace Player
                 if (_playerRb && _hitResults[i].attachedRigidbody == _playerRb) continue;
                 
                 if (!_hitResults[i].TryGetComponent<IInteractable>(out var interactable)) continue;
+                if (!interactable.CanInteract(_playerController)) continue;
 
                 var closestPoint = _hitResults[i].ClosestPoint(detectionOrigin.position);
                 var offset = closestPoint - (Vector2)detectionOrigin.position;

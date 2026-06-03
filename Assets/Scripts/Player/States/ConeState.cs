@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace Player.States
 {
     public class ConeState : IPlayerState
@@ -11,8 +13,6 @@ namespace Player.States
 
         public void EnterState(PlayerController player)
         {
-            if (player.ConeCollider) player.ConeCollider.enabled = true;
-            if (player.IceCreamCollider) player.IceCreamCollider.enabled = false;
         }
 
         public void Execute(PlayerController player)
@@ -20,15 +20,19 @@ namespace Player.States
             if (player.JumpInputThisFrame && player.IsGrounded()) 
             {
                 player.ChangeState(player.IceCreamState);
-                
-                var velocity = player.Rb.linearVelocity;
-                velocity.y = player.JumpForce;
-                player.Rb.linearVelocity = velocity;
             }
 
-            if (player.InteractInputThisFrame && player.InteractComponent) 
+            if (player.InteractInputThisFrame)
             {
-                player.InteractComponent.CheckAndInteract();
+                if (player.CarriedSpoon)
+                {
+                    player.CarriedSpoon.Drop();
+                    player.SetCarriedSpoon(null);
+                }
+                else if (player.InteractComponent)
+                {
+                    player.InteractComponent.CheckAndInteract();
+                }
             }
         }
 

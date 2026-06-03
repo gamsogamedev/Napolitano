@@ -8,7 +8,7 @@ namespace Player
     [RequireComponent(typeof(Rigidbody2D))]
     public class PlayerController : NetworkBehaviour
     {
-        private enum PlayerStateType
+        public enum PlayerStateType
         {
             Cone,
             IceCream,
@@ -34,8 +34,20 @@ namespace Player
         [Header("Referências")] 
         [SerializeField] private Interact interactComponent;
         [SerializeField] private SpriteRenderer spriteRenderer;
+        [SerializeField] private Transform spriteTransform;
         [SerializeField] private Transform spoonHoldPoint;
-
+        [SerializeField] private GameObject spoonPrefab;
+        [SerializeField] private NetworkObject conePrefab;
+        [SerializeField] private SpriteRenderer coneSpriteRenderer;
+        
+        public Spoon CarriedSpoon { get; private set; }
+        
+        [Header("Visuais por Estado")] 
+        [SerializeField] private Color iceCreamColor = new Color(1f, 0.5f, 0.8f);
+        [SerializeField] private Vector3 iceCreamSpriteScale = new Vector3(1f, 1f, 1f);
+        [SerializeField] private float coneGroundCheckY = -1;
+        [SerializeField] private float iceCreamGroundCheckY = -0.5f;
+        
         private InputAction _interactAction;
         private InputAction _jumpAction;
         private InputAction _moveAction;
@@ -58,6 +70,7 @@ namespace Player
         public Vector2 MoveInput { get; private set; }
         public float JumpForce => jumpForce;
         public IPlayerState CurrentState { get; private set; }
+        public PlayerStateType NetworkedStateType => _networkedState.Value;
 
         public bool JumpInputThisFrame => _jumpAction?.WasPressedThisFrame() ?? false;
         public bool InteractInputThisFrame => _interactAction?.WasPressedThisFrame() ?? false;
@@ -80,7 +93,7 @@ namespace Player
 
             HandleInput();
             
-            CurrentState.Execute(this);
+            CurrentState?.Execute(this);
         }
 
         private void FixedUpdate()
@@ -106,7 +119,7 @@ namespace Player
 
             if (!IsOwner)
             {
-                ApplyStateVisuals(_networkedState.Value);
+                ApplyStateConfigutarion(_networkedState.Value);
                 return;
             }
 
@@ -124,6 +137,16 @@ namespace Player
                 Debug.LogError("[PlayerController] InputActionAsset não atribuído no Inspector!");
             }
 
+            if (spoonPrefab != null)
+            {
+                var spoonObj = Instantiate(spoonPrefab, spoonHoldPoint.position, Quaternion.identity);
+                var spoonNet = spoonObj.GetComponent<NetworkObject>();
+                spoonNet.SpawnWithOwnership(OwnerClientId, true);
+
+                CarriedSpoon = spoonObj.GetComponent<Spoon>();
+                CarriedSpoon.AttachTo(this);
+            }
+            
             ChangeState(ConeState);
         }
 
@@ -140,9 +163,25 @@ namespace Player
         {
             if (newState == null) return;
 
+            if (CurrentState == ConeState && newState == IceCreamState && IsOwner && conePrefab)
+            {
+                var spawnPos = groundCheckPoint.position + new Vector3(0f, 0.75f, 0f);
+                var coneNet = Instantiate(conePrefab, spawnPos, Quaternion.identity);
+                coneNet.Spawn(true);
+            }
+
+            if (newState == IceCreamState && CarriedSpoon)
+            {
+                CarriedSpoon.Drop();
+                CarriedSpoon = null;
+            }
+            
             CurrentState?.ExitState(this);
             CurrentState = newState;
             CurrentState.EnterState(this);
+
+            var stateType = GetStateType(newState);
+            ApplyStateConfigutarion(stateType);
 
             if (IsOwner)
                 _networkedState.Value = GetStateType(newState);
@@ -159,6 +198,8 @@ namespace Player
             if (directionX != 0) spriteRenderer.flipX = directionX < 0;
         }
 
+        public void SetCarriedSpoon(Spoon spoon) => CarriedSpoon = spoon;
+        
         public bool IsGrounded()
         {
             if (!groundCheckPoint) return false;
@@ -175,12 +216,35 @@ namespace Player
 
         private void OnNetworkedStateChanged(PlayerStateType oldState, PlayerStateType newState)
         {
-            if (!IsOwner) ApplyStateVisuals(newState);
+            if (!IsOwner) ApplyStateConfigutarion(newState);
         }
 
-        private void ApplyStateVisuals(PlayerStateType stateType)
+        private void ApplyStateConfigutarion(PlayerStateType stateType)
         {
-            // TODO: trocar sprites/tamanho do collider conforme o estado
+            if (spriteRenderer)
+                spriteRenderer.color = stateType == PlayerStateType.Spoon ? Color.white : iceCreamColor;
+            
+            if (coneSpriteRenderer)
+                coneSpriteRenderer.enabled = stateType == PlayerStateType.Cone;
+
+            if (spriteTransform)
+            {
+                spriteTransform.localScale = stateType == PlayerStateType.Spoon ? Vector3.zero : iceCreamSpriteScale;
+                spriteTransform.localPosition = new Vector3(0f, stateType == PlayerStateType.Cone ? 1f : 0f, 0f);
+            }
+
+            if (groundCheckPoint)
+            {
+                groundCheckPoint.localPosition = new Vector3(0f, stateType switch
+                {
+                    PlayerStateType.Cone => coneGroundCheckY,
+                    PlayerStateType.IceCream => iceCreamGroundCheckY,
+                    _ => -0.5f
+                }, 0f);
+            }
+            
+            if (coneCollider) coneCollider.enabled = stateType == PlayerStateType.Cone;
+            if (iceCreamCollider) iceCreamCollider.enabled = stateType == PlayerStateType.IceCream;
         }
     }
 }
