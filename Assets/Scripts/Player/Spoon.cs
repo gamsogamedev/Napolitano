@@ -18,6 +18,18 @@ namespace Player
         private Transform _holdPoint;
         private Rigidbody2D _rb;
         private Vector2 _positionVelocity;
+        private float _previousAngle;
+        private float _rotationalSpeed;
+
+        [SerializeField] private Transform riderHoldPoint;
+        [SerializeField] public float baseLaunchSpeed = 1f;
+        [SerializeField] public float launchMultiplier = 1f;
+
+        private readonly NetworkVariable<ulong> _riderClientId = new(
+            ulong.MaxValue,
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Owner
+        );
 
         private void Awake()
         {
@@ -64,9 +76,18 @@ namespace Player
             var currentAngle = _rb.rotation;
             var newAngle = Mathf.SmoothDampAngle(currentAngle, targetAngle, ref _rotationVelocity, rotationSmoothTime);
             _rb.MoveRotation(newAngle);
+
+            _rotationalSpeed = Mathf.DeltaAngle(_previousAngle, _rb.rotation) / Time.fixedDeltaTime;
+            _previousAngle = _rb.rotation;
         }
-        
-        public bool CanInteract(PlayerController interactor) => !_isCarried.Value == IsOwner;
+
+        public bool CanInteract(PlayerController interactor)
+        {
+            if (IsOwner && _isCarried.Value) return true;
+            if (!_isCarried.Value) return true;
+            return _isCarried.Value && _riderClientId.Value == ulong.MaxValue &&
+                   interactor.CurrentState == interactor.IceCreamState;
+        }
 
         public void Interact(PlayerController interactor)
         {
@@ -76,7 +97,65 @@ namespace Player
                 return;
             }
 
+            if (_isCarried.Value && _riderClientId.Value == ulong.MaxValue &&
+                interactor.CurrentState == interactor.IceCreamState)
+            {
+                RequestEnterSpoonRpc(interactor.OwnerClientId);
+                return;
+            }
+
             RequestPickupRpc(interactor.OwnerClientId);
+        }
+
+        [Rpc(SendTo.Owner)]
+        private void RequestEnterSpoonRpc(ulong riderClientId)
+        {
+            if (_riderClientId.Value != ulong.MaxValue) return;
+            _riderClientId.Value = riderClientId;
+            NotifyEnterSpoonRpc(riderClientId);
+        }
+
+        [Rpc(SendTo.Everyone)]
+        private void NotifyEnterSpoonRpc(ulong riderClientId)
+        {
+            if (NetworkManager.Singleton.LocalClientId != riderClientId) return;
+            var players = FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
+            foreach (var player in players)
+            {
+                if (player.OwnerClientId != riderClientId) continue;
+                player.EnterSpoonAsRider(riderHoldPoint, this);
+                return;
+            }
+        }
+
+        [Rpc(SendTo.Owner)]
+        public void RequestExitSpoonRpc(ulong riderClientId)
+        {
+            if (_riderClientId.Value != riderClientId) return;
+            var toRider = (Vector2)riderHoldPoint.position - (Vector2)transform.position;
+            var radius = toRider.magnitude;
+            var radialDir = radius > 0f ? toRider / radius : (Vector2)transform.up;
+            var tangentialDir = new Vector2(-radialDir.y, radialDir.x) * Mathf.Sign(_rotationalSpeed);
+            var omegaRad = _rotationalSpeed * Mathf.Deg2Rad;
+            var tangentialSpeed = Mathf.Abs(omegaRad) * radius * launchMultiplier;
+            var launchVelocity = tangentialSpeed >= baseLaunchSpeed
+                ? tangentialDir * tangentialSpeed
+                : radialDir * baseLaunchSpeed;
+            _riderClientId.Value = ulong.MaxValue;
+            NotifyExitSpoonRpc(riderClientId, launchVelocity);
+        }
+
+        [Rpc(SendTo.Everyone)]
+        private void NotifyExitSpoonRpc(ulong riderClientId, Vector2 launchVelocity)
+        {
+            if (NetworkManager.Singleton.LocalClientId != riderClientId) return;
+            var players = FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
+            foreach (var player in players)
+            {
+                if (player.OwnerClientId != riderClientId) continue;
+                player.ExitSpoonWithVelocity(launchVelocity);
+                return;
+            }
         }
 
         [Rpc(SendTo.Owner)]
@@ -121,7 +200,7 @@ namespace Player
         private void OnCarriedChanged(bool previous, bool current)
         {
             foreach (var col in GetComponents<Collider2D>())
-                col.enabled = !current;
+                col.isTrigger = current;
             if (_rb) _rb.bodyType = current ? RigidbodyType2D.Kinematic : RigidbodyType2D.Dynamic;
         }
     }
