@@ -27,6 +27,8 @@ public class SessionManager : Singleton<SessionManager>
     public string CurrentSessionCode => ActiveSession?.Code; 
 
     const string playerNamePropertyKey = "playerName";
+
+    public string LocalPlayerName {  get; private set; }
     
     private NetworkManager networkManager;
     
@@ -61,11 +63,17 @@ public class SessionManager : Singleton<SessionManager>
         return new Dictionary<string, PlayerProperty>{{playerNamePropertyKey, playerNameProperty}};
     }
 
+    public string GetLocalPlayerName()
+    {
+        return LocalPlayerName;
+    }
+
     public async UniTask CreateSessionAsHost(string playerName) 
     {
         try 
         {
             var playerProperties = await GetPlayerPropertiesAsyncWithName(playerName);
+            LocalPlayerName = playerName;
             
             var options = new SessionOptions()
             {
@@ -89,6 +97,7 @@ public class SessionManager : Singleton<SessionManager>
         try 
         {
             var playerProperties = await GetPlayerPropertiesAsyncWithName(playerName);
+            LocalPlayerName = playerName;
 
             var joinOptions = new JoinSessionOptions()
             {
