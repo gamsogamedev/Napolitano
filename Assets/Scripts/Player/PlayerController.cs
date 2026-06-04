@@ -290,6 +290,17 @@ namespace Player
                 spriteTransform.localPosition = new Vector3(0f, stateType == PlayerStateType.Cone ? 1f : 0f, 0f);
             }
 
+            if(playerNameText != null)
+            {
+                playerNameText.transform.localPosition = new Vector3(0f, stateType switch
+                {
+                    PlayerStateType.Cone => 2f,
+                    PlayerStateType.IceCream => 1f,
+                    PlayerStateType.Spoon => 0.5f,
+                    _ => throw new System.NotImplementedException(),
+                }, 0f);
+            }
+
             if (groundCheckPoint)
             {
                 groundCheckPoint.localPosition = new Vector3(0f, stateType switch
