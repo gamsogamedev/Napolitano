@@ -29,7 +29,7 @@ namespace Player
             _contactFilter = new ContactFilter2D();
             _contactFilter.SetLayerMask(interactableLayer);
             _contactFilter.useLayerMask = true;
-            _contactFilter.useTriggers = true; 
+            _contactFilter.useTriggers = false; 
         }
 
         public void CheckCollision()
