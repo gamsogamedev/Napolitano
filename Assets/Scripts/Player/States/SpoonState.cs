@@ -6,6 +6,8 @@ namespace Player.States
     {
         private readonly float _followSpeed;
         private Transform _spoonPosition;
+        private bool _isRider;
+        private Spoon _spoon;
 
         public SpoonState(float followSpeed)
         {
@@ -31,17 +33,26 @@ namespace Player.States
             }
 
             if (!player.JumpInputThisFrame) return;
-            
-            player.ChangeState(player.IceCreamState);
-            var velocity = player.Rb.linearVelocity;
-            velocity.y = player.JumpForce;
-            player.Rb.linearVelocity = velocity;
+
+            if (_isRider && _spoon)
+            {
+                _spoon.RequestExitSpoonRpc(player.OwnerClientId);
+            }
+            else
+            {
+                player.ChangeState(player.IceCreamState);
+                var velocity = player.Rb.linearVelocity;
+                velocity.y = player.JumpForce;
+                player.Rb.linearVelocity = velocity;
+            }
         }
 
         public void ExitState(PlayerController player)
         {
             if (player.Rb) player.Rb.bodyType = RigidbodyType2D.Dynamic;
             _spoonPosition = null;
+            _isRider = false;
+            _spoon = null;
         }
 
         public void HandleMovement(PlayerController player)
@@ -60,6 +71,12 @@ namespace Player.States
         public void SetSpoonPosition(Transform position)
         {
             _spoonPosition = position;
+        }
+
+        public void SetRiderMode(Spoon spoon)
+        {
+            _isRider = true;
+            _spoon = spoon;
         }
     }
 }
