@@ -2,6 +2,9 @@ using Player.States;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Unity.Collections;
+using TMPro;
+using Unity.Services.Multiplayer;
 
 namespace Player
 {
@@ -58,6 +61,15 @@ namespace Player
             NetworkVariableWritePermission.Owner
         );
 
+        private TMP_Text playerNameText;
+
+        private readonly NetworkVariable<FixedString64Bytes> _playerName = new(
+            "",
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Owner
+        );
+        
+
         public ConeState ConeState { get; private set; }
         public IceCreamState IceCreamState { get; private set; }
         public SpoonState SpoonState { get; private set; }
@@ -111,11 +123,51 @@ namespace Player
             Gizmos.DrawWireSphere(groundCheckPoint.position, groundCheckRadius);
         }
 
+        private void CreatePlayerNameText() //cria para ambos os jogadores o objeto nome TextMeshPro, nome visível no mundo
+        {
+            GameObject textObjt = new GameObject("PlayerName");
+
+            textObjt.transform.SetParent(transform, false);
+            textObjt.transform.localPosition = new Vector3(0f, 2f, 0f);
+
+            playerNameText = textObjt.AddComponent<TextMeshPro>();
+
+            playerNameText.alignment = TextAlignmentOptions.Center;
+            playerNameText.fontSize = 3;
+        }
+
+        private void UpdatePlayerNameText(string playerName) //atualiza UI
+        {
+            if (playerNameText != null){
+                playerNameText.text = playerName;
+            }
+        }
+
+        private void InitializePlayerName() //inicializa nome do dono
+        {
+            if (!IsOwner) return;
+
+            string playerName = SessionManager.Instance.GetLocalPlayerName();
+            
+            _playerName.Value = playerName;
+            
+            UpdatePlayerNameText(playerName);
+
+        }
+
+        
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
 
+            CreatePlayerNameText();
+
             _networkedState.OnValueChanged += OnNetworkedStateChanged;
+            _playerName.OnValueChanged += OnPlayerNameChanged;
+
+            InitializePlayerName();
+            UpdatePlayerNameText(_playerName.Value.ToString());
+
 
             if (!IsOwner)
             {
@@ -155,6 +207,7 @@ namespace Player
             base.OnNetworkDespawn();
 
             _networkedState.OnValueChanged -= OnNetworkedStateChanged;
+            _playerName.OnValueChanged -= OnPlayerNameChanged;
             
             inputActions?.FindActionMap("Player")?.Disable();
         }
@@ -232,6 +285,10 @@ namespace Player
             if (!IsOwner) ApplyStateConfigutarion(newState);
         }
 
+        private void OnPlayerNameChanged(FixedString64Bytes oldValue, FixedString64Bytes newValue) {
+            UpdatePlayerNameText(newValue.ToString());
+        }
+
         private void ApplyStateConfigutarion(PlayerStateType stateType)
         {
             if (spriteRenderer)
@@ -244,6 +301,17 @@ namespace Player
             {
                 spriteTransform.localScale = stateType == PlayerStateType.Spoon ? Vector3.zero : iceCreamSpriteScale;
                 spriteTransform.localPosition = new Vector3(0f, stateType == PlayerStateType.Cone ? 1f : 0f, 0f);
+            }
+
+            if(playerNameText != null)
+            {
+                playerNameText.transform.localPosition = new Vector3(0f, stateType switch
+                {
+                    PlayerStateType.Cone => 2f,
+                    PlayerStateType.IceCream => 1f,
+                    PlayerStateType.Spoon => 0.5f,
+                    _ => throw new System.NotImplementedException(),
+                }, 0f);
             }
 
             if (groundCheckPoint)
