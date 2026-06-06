@@ -26,8 +26,8 @@ Transform:
   m_GameObject: {fileID: 323484054115036745}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.25, z: 0}
-  m_LocalScale: {x: 1, y: 1.5, z: 1}
+  m_LocalPosition: {x: 0, y: -0.1797, z: 0}
+  m_LocalScale: {x: 0.2821497, y: 0.4232246, z: 0.2821497}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8820243309969115103}
@@ -81,7 +81,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: c175927ae4788c594ab457d12b4e039c, type: 3}
+  m_Sprite: {fileID: -6145457549833326616, guid: 6d51c61a3266d5a4e8f9c044df56af52, type: 3}
   m_Color: {r: 0.5294118, g: 0.3254902, b: 0.1882353, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -117,8 +117,8 @@ Transform:
   m_GameObject: {fileID: 1658449795405768233}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0.169, z: 0}
+  m_LocalScale: {x: 0.27, y: 0.27, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8820243309969115103}
@@ -172,7 +172,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: c175927ae4788c594ab457d12b4e039c, type: 3}
+  m_Sprite: {fileID: -5814448287533358565, guid: ff9152fb87de3ba53a27bef2b225ad6b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -250,10 +250,10 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 6087286407425204411}
   - {fileID: 6316607190666682914}
   - {fileID: 7921991437497426451}
   - {fileID: 2012905303358621022}
+  - {fileID: 6087286407425204411}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &7748459574516767520
@@ -317,8 +317,8 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0.25}
-  m_Size: {x: 1, y: 2.5}
+  m_Offset: {x: 0, y: 0}
+  m_Size: {x: 1, y: 2}
   m_Direction: 0
 --- !u!58 &2871198844247019810
 CircleCollider2D:
@@ -413,7 +413,7 @@ MonoBehaviour:
   spoonPrefab: {fileID: 8574355363750953392, guid: 7e6084e0f47eed9bfa36bd53a955c8c6, type: 3}
   conePrefab: {fileID: 8926525331235483521, guid: 4409b35497d414502b304c15d152e373, type: 3}
   coneSpriteRenderer: {fileID: 4860571451292823010}
-  iceCreamColor: {r: 1, g: 0.5, b: 0.8, a: 1}
+  iceCreamColor: {r: 1, g: 1, b: 1, a: 1}
   iceCreamSpriteScale: {x: 1, y: 1, z: 1}
   coneGroundCheckY: -1
   iceCreamGroundCheckY: -0.5
@@ -492,6 +492,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0502259bcc4498e39e5be34094541ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCollision
+  ShowTopMostFoldoutHeaderGroup: 1
 --- !u!1 &6121902232421633784
 GameObject:
   m_ObjectHideFlags: 0

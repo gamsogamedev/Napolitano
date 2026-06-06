@@ -10,8 +10,7 @@ public class LevelWinCondition : NetworkBehaviour, IInteractable
     private HashSet<ulong> playersWon = new HashSet<ulong>();
     
     public static event Action OnLevelComplete;
-
-    // TODO: São 4 da manhã e eu não quero me dar o trabalho de entender essa porr
+    
     public bool CanInteract(PlayerController interactor)
     {
         return true;

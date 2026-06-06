@@ -11,8 +11,7 @@ public class Ladder : MonoBehaviour {
         var player = other.GetComponentInParent<PlayerController>();
         if (!player) return;
         if (!player.IsOwner) return;
-
-        // Só pode subir se estiver no cone
+        
         if (player.CurrentState != player.ConeState) return;
 
         _player = player;

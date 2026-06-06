@@ -54,7 +54,6 @@ public class ModalManager : MonoBehaviour
 
     #endregion
     
-    //TODO: GAMBIARRA PRO NAPOLITANO, TIRAR PRA BUILD DO PACKAGE
     private bool hasButtons;
 
     private void OnEnable()

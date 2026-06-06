@@ -299,7 +299,7 @@ namespace Player
 
             if (spriteTransform)
             {
-                spriteTransform.localScale = stateType == PlayerStateType.Spoon ? Vector3.zero : iceCreamSpriteScale;
+                //spriteTransform.localScale = stateType == PlayerStateType.Spoon ? Vector3.zero : iceCreamSpriteScale;
                 spriteTransform.localPosition = new Vector3(0f, stateType == PlayerStateType.Cone ? 1f : 0f, 0f);
             }
 
