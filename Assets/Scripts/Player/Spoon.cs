@@ -60,8 +60,27 @@ namespace Player
         {
             if (!IsOwner) return;
 
+            if (_riderClientId.Value != ulong.MaxValue)
+                EjectRider();
+
             _holdPoint = null;
             _isCarried.Value = false;
+        }
+
+        private void EjectRider()
+        {
+            var riderId = _riderClientId.Value;
+            var toRider = (Vector2)riderHoldPoint.position - (Vector2)transform.position;
+            var radius = toRider.magnitude;
+            var radialDir = radius > 0f ? toRider / radius : (Vector2)transform.up;
+            var tangential = new Vector2(-radialDir.y, radialDir.x);
+            var omegaRad = _rotationalSpeed * Mathf.Deg2Rad;
+            var tangentialSpeed = Mathf.Abs(omegaRad) * radius * launchMultiplier;
+            var speed = Mathf.Max(tangentialSpeed, baseLaunchSpeed);
+            var launchDir = _rotationalSpeed != 0f ? tangential * Mathf.Sign(_rotationalSpeed) : radialDir;
+            var launchVelocity = launchDir * speed;
+            _riderClientId.Value = ulong.MaxValue;
+            NotifyExitSpoonRpc(riderId, launchVelocity);
         }
 
         private void FixedUpdate()
@@ -132,17 +151,7 @@ namespace Player
         public void RequestExitSpoonRpc(ulong riderClientId)
         {
             if (_riderClientId.Value != riderClientId) return;
-            var toRider = (Vector2)riderHoldPoint.position - (Vector2)transform.position;
-            var radius = toRider.magnitude;
-            var radialDir = radius > 0f ? toRider / radius : (Vector2)transform.up;
-            var tangentialDir = new Vector2(-radialDir.y, radialDir.x) * Mathf.Sign(_rotationalSpeed);
-            var omegaRad = _rotationalSpeed * Mathf.Deg2Rad;
-            var tangentialSpeed = Mathf.Abs(omegaRad) * radius * launchMultiplier;
-            var launchVelocity = tangentialSpeed >= baseLaunchSpeed
-                ? tangentialDir * tangentialSpeed
-                : radialDir * baseLaunchSpeed;
-            _riderClientId.Value = ulong.MaxValue;
-            NotifyExitSpoonRpc(riderClientId, launchVelocity);
+            EjectRider();
         }
 
         [Rpc(SendTo.Everyone)]
