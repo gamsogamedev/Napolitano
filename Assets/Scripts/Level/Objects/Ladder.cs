@@ -8,19 +8,15 @@ public class Ladder : MonoBehaviour {
     private float _originalGravity;
 
     private void OnTriggerEnter2D(Collider2D other) {
-        var player = other.GetComponentInParent<PlayerController>();
-        if (!player) return;
-        if (!player.IsOwner) return;
-        
-        if (player.CurrentState != player.ConeState) return;
 
-        _player = player;
-        _originalGravity = player.Rb.gravityScale;
+        if (other.TryGetComponent(out PlayerController player) && player.IsOwner)
+        {
+            _player = player;
+            _originalGravity = player.Rb.gravityScale;
 
-        player.Rb.gravityScale = 0f;
-        player.Rb.linearVelocity = Vector2.zero;
-
-        Debug.Log("Player entrou na escada");
+            player.Rb.gravityScale = 0f;
+            player.Rb.linearVelocity = Vector2.zero;
+        }
     }
 
     private void OnTriggerStay2D(Collider2D other) {
@@ -36,18 +32,11 @@ public class Ladder : MonoBehaviour {
     }
 
     private void OnTriggerExit2D(Collider2D other) {
-        var player = other.GetComponentInParent<PlayerController>();
-        if (!player) return;
-        if (player != _player) return;
+        if (other.TryGetComponent(out PlayerController player) && player == _player)
+        {
+            player.Rb.gravityScale = _originalGravity;
 
-        player.Rb.gravityScale = _originalGravity;
-
-        _player = null;
-
-        Debug.Log("Player saiu da escada");
-    }
-
-    public void SetActive(bool active) {
-        gameObject.SetActive(active);
+            _player = null;    
+        }
     }
 }

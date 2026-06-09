@@ -42,5 +42,20 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Background
+    uniqueID: 832422947
+    locked: 0
+  - name: Interactables
+    uniqueID: 462214353
+    locked: 0
+  - name: Projectiles
+    uniqueID: 1240920465
+    locked: 0
+  - name: Player
+    uniqueID: 3557455883
+    locked: 0
+  - name: TileSet
+    uniqueID: 2484460533
+    locked: 0
   m_RenderingLayers:
   - Default

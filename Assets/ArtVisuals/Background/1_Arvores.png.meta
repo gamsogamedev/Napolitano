@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 6d51c61a3266d5a4e8f9c044df56af52
+guid: bf6d87681f72741cca483be64f22501b
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -6145457549833326616
-    second: Casquinha_0
+      213: 956571822169780191
+    second: Sombras_arv_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Casquinha_0
+      name: Sombras_arv_0
       rect:
         serializedVersion: 2
-        x: 615
-        y: 366
-        width: 404
-        height: 397
+        x: 0
+        y: 0
+        width: 2484
+        height: 791
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 8ef21ff1be2f6baa0800000000000000
-      internalID: -6145457549833326616
+      spriteID: fdfe39e010d664d00800000000000000
+      internalID: 956571822169780191
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Casquinha_0: -6145457549833326616
+      Sombras_arv_0: 956571822169780191
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

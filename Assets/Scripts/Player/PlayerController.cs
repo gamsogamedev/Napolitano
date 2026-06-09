@@ -42,12 +42,12 @@ namespace Player
         [SerializeField] private GameObject spoonPrefab;
         [SerializeField] private NetworkObject conePrefab;
         [SerializeField] private SpriteRenderer coneSpriteRenderer;
+        [SerializeField] private TextMeshPro playerNameField;
         
         public Spoon CarriedSpoon { get; private set; }
         
         [Header("Visuais por Estado")] 
         [SerializeField] private Color iceCreamColor = new Color(1f, 0.5f, 0.8f);
-        [SerializeField] private Vector3 iceCreamSpriteScale = new Vector3(1f, 1f, 1f);
         [SerializeField] private float coneGroundCheckY = -1;
         [SerializeField] private float iceCreamGroundCheckY = -0.5f;
         
@@ -61,7 +61,6 @@ namespace Player
             NetworkVariableWritePermission.Owner
         );
 
-        private TMP_Text playerNameText;
 
         private readonly NetworkVariable<FixedString64Bytes> _playerName = new(
             "",
@@ -122,36 +121,13 @@ namespace Player
             Gizmos.color = Color.red;
             Gizmos.DrawWireSphere(groundCheckPoint.position, groundCheckRadius);
         }
-
-        private void CreatePlayerNameText() //cria para ambos os jogadores o objeto nome TextMeshPro, nome visível no mundo
-        {
-            GameObject textObjt = new GameObject("PlayerName");
-
-            textObjt.transform.SetParent(transform, false);
-            textObjt.transform.localPosition = new Vector3(0f, 2f, 0f);
-
-            playerNameText = textObjt.AddComponent<TextMeshPro>();
-
-            playerNameText.alignment = TextAlignmentOptions.Center;
-            playerNameText.fontSize = 3;
-        }
-
-        private void UpdatePlayerNameText(string playerName) //atualiza UI
-        {
-            if (playerNameText != null){
-                playerNameText.text = playerName;
-            }
-        }
+        
 
         private void InitializePlayerName() //inicializa nome do dono
         {
             if (!IsOwner) return;
 
-            string playerName = SessionManager.Instance.GetLocalPlayerName();
-            
-            _playerName.Value = playerName;
-            
-            UpdatePlayerNameText(playerName);
+            _playerName.Value = SessionManager.Instance.GetLocalPlayerName();
 
         }
 
@@ -159,15 +135,13 @@ namespace Player
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
-
-            CreatePlayerNameText();
-
+            
             _networkedState.OnValueChanged += OnNetworkedStateChanged;
             _playerName.OnValueChanged += OnPlayerNameChanged;
 
             InitializePlayerName();
-            UpdatePlayerNameText(_playerName.Value.ToString());
-
+            
+            playerNameField.text = _playerName.Value.ToString();
 
             if (!IsOwner)
             {
@@ -286,7 +260,7 @@ namespace Player
         }
 
         private void OnPlayerNameChanged(FixedString64Bytes oldValue, FixedString64Bytes newValue) {
-            UpdatePlayerNameText(newValue.ToString());
+            playerNameField.text = newValue.ToString();
         }
 
         private void ApplyStateConfigutarion(PlayerStateType stateType)
@@ -296,23 +270,6 @@ namespace Player
             
             if (coneSpriteRenderer)
                 coneSpriteRenderer.enabled = stateType == PlayerStateType.Cone;
-
-            if (spriteTransform)
-            {
-                //spriteTransform.localScale = stateType == PlayerStateType.Spoon ? Vector3.zero : iceCreamSpriteScale;
-                spriteTransform.localPosition = new Vector3(0f, stateType == PlayerStateType.Cone ? 1f : 0f, 0f);
-            }
-
-            if(playerNameText != null)
-            {
-                playerNameText.transform.localPosition = new Vector3(0f, stateType switch
-                {
-                    PlayerStateType.Cone => 2f,
-                    PlayerStateType.IceCream => 1f,
-                    PlayerStateType.Spoon => 0.5f,
-                    _ => throw new System.NotImplementedException(),
-                }, 0f);
-            }
 
             if (groundCheckPoint)
             {

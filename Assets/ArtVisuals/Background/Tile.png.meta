@@ -1,13 +1,10 @@
 fileFormatVersion: 2
-guid: 13609f4e3f8043544b912e5683d41c39
+guid: bfb1e64cc5972b4d59849156c82ad723
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 8161406037515784418
-    second: Sorvete_Baunilha_Sprite_0
-  - first:
-      213: 260195665305928017
-    second: Sorvete_Baunilha_Sprite_1
+      213: 2965533445407818845
+    second: Chao_revisado_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -49,13 +46,13 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
-  spriteMeshType: 1
+  spriteMeshType: 0
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
-  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spritePixelsToUnits: 2000
+  spriteBorder: {x: 0, y: 256, z: 0, w: 321}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
   alphaIsTransparency: 1
@@ -116,45 +113,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Sorvete_Baunilha_Sprite_0
+      name: Chao_revisado_0
       rect:
         serializedVersion: 2
-        x: 611
-        y: 499
-        width: 420
-        height: 371
+        x: 1105
+        y: 485
+        width: 2998
+        height: 1900
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 2e05bd5dc83234170800000000000000
-      internalID: 8161406037515784418
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Sorvete_Baunilha_Sprite_1
-      rect:
-        serializedVersion: 2
-        x: 1239
-        y: 754
-        width: 6
-        height: 6
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 15108aa34966c9300800000000000000
-      internalID: 260195665305928017
+      spriteID: d54c21fd4f0b72920800000000000000
+      internalID: 2965533445407818845
       vertices: []
       indices: 
       edges: []
@@ -163,8 +138,8 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
-    internalID: 0
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 1537655665
     vertices: []
     indices: 
     edges: []
@@ -173,8 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Sorvete_Baunilha_Sprite_0: 8161406037515784418
-      Sorvete_Baunilha_Sprite_1: 260195665305928017
+      Chao_revisado_0: 2965533445407818845
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

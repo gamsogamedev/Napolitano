@@ -6,7 +6,7 @@ public class NetworkTogglableItem : NetworkBehaviour
     [SerializeField] private Renderer sprite;
     [SerializeField] private Collider2D collision;
     
-    private readonly NetworkVariable<bool> isItemActive = new NetworkVariable<bool>(
+    private readonly NetworkVariable<bool> isItemActive = new (
         false,
         NetworkVariableReadPermission.Everyone,
         NetworkVariableWritePermission.Owner
