@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using Player.States;
 using Unity.Netcode;
 using UnityEngine;
@@ -36,7 +38,7 @@ namespace Player
 
         [Header("Referências")] 
         [SerializeField] private Interact interactComponent;
-        [SerializeField] private SpriteRenderer spriteRenderer;
+        [SerializeField] private SpriteRenderer bodySpriteRenderer;
         [SerializeField] private Transform spriteTransform;
         [SerializeField] private Transform spoonHoldPoint;
         [SerializeField] private GameObject spoonPrefab;
@@ -51,6 +53,10 @@ namespace Player
         [SerializeField] private float coneGroundCheckY = -1;
         [SerializeField] private float iceCreamGroundCheckY = -0.5f;
         
+        [Header("Sprites")]
+        [SerializeField] private Sprite strawberrySprite;
+        [SerializeField] private Sprite vanillaSprite;
+        
         private InputAction _interactAction;
         private InputAction _jumpAction;
         private InputAction _moveAction;
@@ -60,13 +66,20 @@ namespace Player
             NetworkVariableReadPermission.Everyone,
             NetworkVariableWritePermission.Owner
         );
-
-
+        
         private readonly NetworkVariable<FixedString64Bytes> _playerName = new(
             "",
             NetworkVariableReadPermission.Everyone,
             NetworkVariableWritePermission.Owner
         );
+        
+        private readonly NetworkVariable<PlayerSprite> _playerSprite = new(
+            PlayerSprite.Strawberry,
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Owner
+        );
+        
+        public static readonly Dictionary<ulong, PlayerController> AllPlayers = new Dictionary<ulong, PlayerController>();
         
 
         public ConeState ConeState { get; private set; }
@@ -76,6 +89,10 @@ namespace Player
         public Rigidbody2D Rb { get; private set; }
         public Collider2D ConeCollider => coneCollider;
         public Collider2D IceCreamCollider => iceCreamCollider;
+        
+        //Maybe you can use this, I just added it
+        public PlayerSprite PlayerSprite => _playerSprite.Value;
+        
         public Interact InteractComponent => interactComponent;
         public Transform SpoonHoldPoint => spoonHoldPoint;
         public Vector2 MoveInput { get; private set; }
@@ -90,7 +107,7 @@ namespace Player
         {
             Rb = GetComponent<Rigidbody2D>();
 
-            spriteRenderer ??= GetComponentInChildren<SpriteRenderer>();
+            bodySpriteRenderer ??= GetComponentInChildren<SpriteRenderer>();
             interactComponent ??= GetComponent<Interact>();
 
             ConeState = new ConeState(coneSpeed);
@@ -123,11 +140,12 @@ namespace Player
         }
         
 
-        private void InitializePlayerName() //inicializa nome do dono
+        private void InitializePlayer()
         {
             if (!IsOwner) return;
 
             _playerName.Value = SessionManager.Instance.GetLocalPlayerName();
+            _playerSprite.Value = SessionManager.Instance.GetLocalPlayerSprite();
 
         }
 
@@ -136,12 +154,18 @@ namespace Player
         {
             base.OnNetworkSpawn();
             
+            AllPlayers[OwnerClientId] = this;
+            
             _networkedState.OnValueChanged += OnNetworkedStateChanged;
             _playerName.OnValueChanged += OnPlayerNameChanged;
+            _playerSprite.OnValueChanged += OnPlayerSpriteChanged;
 
-            InitializePlayerName();
+            InitializePlayer();
             
+            //TODO: sao 4 da manha dnv e nao quero checkar o pq que precisa dessa merda
             playerNameField.text = _playerName.Value.ToString();
+            SetSprite(_playerSprite.Value);
+            
 
             if (!IsOwner)
             {
@@ -179,9 +203,12 @@ namespace Player
         public override void OnNetworkDespawn()
         {
             base.OnNetworkDespawn();
+            
+            AllPlayers.Remove(OwnerClientId);
 
             _networkedState.OnValueChanged -= OnNetworkedStateChanged;
             _playerName.OnValueChanged -= OnPlayerNameChanged;
+            _playerSprite.OnValueChanged -= OnPlayerSpriteChanged;
             
             inputActions?.FindActionMap("Player")?.Disable();
         }
@@ -221,8 +248,7 @@ namespace Player
 
         public void SetFacingDirection(float directionX)
         {
-            if (!spriteRenderer) return;
-            if (directionX != 0) spriteRenderer.flipX = directionX < 0;
+            if (directionX != 0) bodySpriteRenderer.flipX = directionX > 0;
         }
 
         public void SetCarriedSpoon(Spoon spoon) => CarriedSpoon = spoon;
@@ -262,27 +288,50 @@ namespace Player
         private void OnPlayerNameChanged(FixedString64Bytes oldValue, FixedString64Bytes newValue) {
             playerNameField.text = newValue.ToString();
         }
+        
+        private void OnPlayerSpriteChanged(PlayerSprite previousValue, PlayerSprite newValue)
+        {
+            switch (newValue)
+            {
+                case PlayerSprite.Strawberry: bodySpriteRenderer.sprite = strawberrySprite; break;
+                case PlayerSprite.Vanilla:  bodySpriteRenderer.sprite = vanillaSprite; break;
+                case PlayerSprite.Chocolate: Debug.LogWarning("PlayerController(288): acessando com skin de chocolate");break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(newValue), newValue, null);
+            }
+        }
+
+        private void SetSprite(PlayerSprite sprite)
+        {
+            switch (sprite)
+            {
+                case PlayerSprite.Strawberry: bodySpriteRenderer.sprite = strawberrySprite; break;
+                case PlayerSprite.Vanilla:  bodySpriteRenderer.sprite = vanillaSprite; break;
+            }
+        }
 
         private void ApplyStateConfigutarion(PlayerStateType stateType)
         {
-            if (spriteRenderer)
-                spriteRenderer.color = stateType == PlayerStateType.Spoon ? Color.white : iceCreamColor;
+            coneSpriteRenderer.enabled = stateType == PlayerStateType.Cone;
             
-            if (coneSpriteRenderer)
-                coneSpriteRenderer.enabled = stateType == PlayerStateType.Cone;
+            SetSpoonVisibility(stateType != PlayerStateType.Spoon);
 
-            if (groundCheckPoint)
+            groundCheckPoint.localPosition = new Vector3(0f, stateType switch
             {
-                groundCheckPoint.localPosition = new Vector3(0f, stateType switch
-                {
-                    PlayerStateType.Cone => coneGroundCheckY,
-                    PlayerStateType.IceCream => iceCreamGroundCheckY,
-                    _ => -0.5f
-                }, 0f);
-            }
+                PlayerStateType.Cone => coneGroundCheckY,
+                PlayerStateType.IceCream => iceCreamGroundCheckY,
+                _ => -0.5f
+            }, 0f);
+            
             
             if (coneCollider) coneCollider.enabled = stateType == PlayerStateType.Cone;
             if (iceCreamCollider) iceCreamCollider.enabled = stateType == PlayerStateType.IceCream;
+        }
+        
+        private void SetSpoonVisibility(bool visibility)
+        {
+            bodySpriteRenderer.enabled = visibility;
+            playerNameField.enabled = visibility;
         }
     }
 }

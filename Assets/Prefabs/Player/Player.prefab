@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2012905303358621022}
   - component: {fileID: 4860571451292823010}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: ConeSprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -79,7 +79,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -737511413
   m_SortingLayer: 4
-  m_SortingOrder: 1
+  m_SortingOrder: 4
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 6d51c61a3266d5a4e8f9c044df56af52, type: 3}
   m_Color: {r: 0.5294118, g: 0.3254902, b: 0.1882353, a: 1}
@@ -101,8 +101,8 @@ GameObject:
   m_Component:
   - component: {fileID: 6087286407425204411}
   - component: {fileID: 5824778800778296040}
-  m_Layer: 0
-  m_Name: Sprite
+  m_Layer: 9
+  m_Name: MainBodySprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -170,7 +170,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -737511413
   m_SortingLayer: 4
-  m_SortingOrder: 0
+  m_SortingOrder: 3
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: ff9152fb87de3ba53a27bef2b225ad6b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -191,7 +191,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7921991437497426451}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: SpoonHoldPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -224,7 +224,7 @@ GameObject:
   - component: {fileID: 7804834658456256494}
   - component: {fileID: 719598262432407620}
   - component: {fileID: 8306082844172709279}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: PlayerName
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -411,7 +411,7 @@ GameObject:
   - component: {fileID: 2698973961219381762}
   - component: {fileID: -1586147261616891562}
   - component: {fileID: 5876001964473948597}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -665,7 +665,7 @@ MonoBehaviour:
   groundCheckRadius: 0.2
   inputActions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   interactComponent: {fileID: 2698973961219381762}
-  spriteRenderer: {fileID: 5824778800778296040}
+  bodySpriteRenderer: {fileID: 5824778800778296040}
   spriteTransform: {fileID: 6087286407425204411}
   spoonHoldPoint: {fileID: 7921991437497426451}
   spoonPrefab: {fileID: 8574355363750953392, guid: 7e6084e0f47eed9bfa36bd53a955c8c6, type: 3}
@@ -675,6 +675,8 @@ MonoBehaviour:
   iceCreamColor: {r: 1, g: 1, b: 1, a: 1}
   coneGroundCheckY: -1
   iceCreamGroundCheckY: -0.5
+  strawberrySprite: {fileID: 21300000, guid: ff9152fb87de3ba53a27bef2b225ad6b, type: 3}
+  vanillaSprite: {fileID: 21300000, guid: 13609f4e3f8043544b912e5683d41c39, type: 3}
 --- !u!1 &6121902232421633784
 GameObject:
   m_ObjectHideFlags: 0
@@ -684,7 +686,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6316607190666682914}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: GroundCheck
   m_TagString: Untagged
   m_Icon: {fileID: 0}

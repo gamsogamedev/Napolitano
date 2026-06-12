@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro; 
 using Cysharp.Threading.Tasks;
+using Player;
 using Unity.Netcode; 
 
 public class LobbyUIController : MonoBehaviour
@@ -25,6 +26,8 @@ public class LobbyUIController : MonoBehaviour
     
     [Header("Nome da sua cena")]
     [SerializeField] private string gameSceneName = "GameScene";
+    
+    private PlayerSprite playerSprite = PlayerSprite.Strawberry;
     
     private NetworkManager networkManager;
 
@@ -75,7 +78,7 @@ public class LobbyUIController : MonoBehaviour
             statusLabel.text = "Criando sessão...";
             SetUIInteractable(false);
 
-            await SessionManager.Instance.CreateSessionAsHost(playerNameInput.text.Trim());
+            await SessionManager.Instance.CreateSessionAsHost(playerNameInput.text.Trim(), playerSprite);
 
             if (SessionManager.Instance.ActiveSession != null)
             {
@@ -109,7 +112,7 @@ public class LobbyUIController : MonoBehaviour
             statusLabel.text = "Joining Session...";
             SetUIInteractable(false);
 
-            await SessionManager.Instance.JoinSessionByCode(code, playerName);
+            await SessionManager.Instance.JoinSessionByCode(code, playerName, playerSprite);
 
             if (SessionManager.Instance.ActiveSession != null)
             {
@@ -145,6 +148,16 @@ public class LobbyUIController : MonoBehaviour
             {
                 Console.WriteLine(e);
                 throw;
+            }
+        }
+
+        public void OnSkinDrowdownChanged(Int32 index)
+        {
+            switch (index)
+            {
+                case 0: playerSprite = PlayerSprite.Strawberry; break;
+                case 1: playerSprite = PlayerSprite.Vanilla; break;
+                case 2: playerSprite = PlayerSprite.Chocolate; break;
             }
         }
 

@@ -7,6 +7,12 @@ namespace Player
     public class Spoon : NetworkBehaviour, IInteractable
     {
         [SerializeField] private float rotationSmoothTime = 0.4f;
+        [SerializeField] private SpriteRenderer spoonHeadSprite;
+        
+        [SerializeField] private Sprite headClean;
+        [SerializeField] private Sprite headStrawberry;
+        [SerializeField] private Sprite headVanilla;
+        
         private float _rotationVelocity;
         
         private readonly NetworkVariable<bool> _isCarried = new(
@@ -30,6 +36,12 @@ namespace Player
             NetworkVariableReadPermission.Everyone,
             NetworkVariableWritePermission.Owner
         );
+        
+        private readonly NetworkVariable<float> _networkedTargetAngle = new(
+            0f,
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Owner
+        );
 
         private void Awake()
         {
@@ -40,17 +52,18 @@ namespace Player
         {
             base.OnNetworkSpawn();
             _isCarried.OnValueChanged += OnCarriedChanged;
+            _riderClientId.OnValueChanged += OnRiderChanged;
         }
-
+        
         public override void OnNetworkDespawn()
         {
             base.OnNetworkDespawn();
             _isCarried.OnValueChanged -= OnCarriedChanged;
+            _riderClientId.OnValueChanged -= OnRiderChanged;
         }
 
         public void AttachTo(PlayerController player)
         {
-            _holdPoint = player.SpoonHoldPoint;
             _rotationVelocity = -0f;
             _isCarried.Value = true;
             player.SetCarriedSpoon(this);
@@ -86,22 +99,52 @@ namespace Player
             _riderClientId.Value = ulong.MaxValue;
             NotifyExitSpoonRpc(riderId, launchVelocity);
         }
+        
+        private void UpdateSpoonSprite(ulong currentRiderId)
+        {
+            if (currentRiderId == ulong.MaxValue)
+            {
+                spoonHeadSprite.sprite = headClean;
+                return;
+            }
+            
+            if (PlayerController.AllPlayers.TryGetValue(currentRiderId, out PlayerController player))
+            {
+                switch (player.PlayerSprite)
+                {
+                    case PlayerSprite.Strawberry: spoonHeadSprite.sprite = headStrawberry; break;
+                    case PlayerSprite.Vanilla:    spoonHeadSprite.sprite = headVanilla; break;
+                    default:                      spoonHeadSprite.sprite = headStrawberry; break;
+                }
+            }
 
+        }
+        
         private void FixedUpdate()
         {
-            if (!IsOwner || !_isCarried.Value || !_holdPoint) return;
-            
+            if (!_isCarried.Value || !_holdPoint) return;
+    
             _rb.MovePosition(_holdPoint.position);
 
-            var mouseWorld = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
-            var direction = (mouseWorld - _holdPoint.position).normalized;
-            var targetAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90f;
+            if (IsOwner)
+            {
+                var mouseWorld = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+                var direction = (mouseWorld - _holdPoint.position).normalized;
+        
+                _networkedTargetAngle.Value = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90f;
+            }
+
             var currentAngle = _rb.rotation;
-            var newAngle = Mathf.SmoothDampAngle(currentAngle, targetAngle, ref _rotationVelocity, rotationSmoothTime);
+            var newAngle = Mathf.SmoothDampAngle(currentAngle, _networkedTargetAngle.Value, ref _rotationVelocity, rotationSmoothTime);
             _rb.MoveRotation(newAngle);
 
             _rotationalSpeed = Mathf.DeltaAngle(_previousAngle, _rb.rotation) / Time.fixedDeltaTime;
             _previousAngle = _rb.rotation;
+
+            if (Mathf.Abs(_rotationalSpeed) > 10f)
+            {
+                spoonHeadSprite.flipY = _rotationalSpeed < 0;
+            }
         }
 
         public bool CanInteract(PlayerController interactor)
@@ -142,13 +185,8 @@ namespace Player
         private void NotifyEnterSpoonRpc(ulong riderClientId)
         {
             if (NetworkManager.Singleton.LocalClientId != riderClientId) return;
-            var players = FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
-            foreach (var player in players)
-            {
-                if (player.OwnerClientId != riderClientId) continue;
-                player.EnterSpoonAsRider(riderHoldPoint, this);
-                return;
-            }
+            if (PlayerController.AllPlayers.TryGetValue(riderClientId, out var localPlayer))
+                localPlayer.EnterSpoonAsRider(riderHoldPoint, this);
         }
 
         [Rpc(SendTo.Owner)]
@@ -162,13 +200,8 @@ namespace Player
         private void NotifyExitSpoonRpc(ulong riderClientId, Vector2 launchVelocity)
         {
             if (NetworkManager.Singleton.LocalClientId != riderClientId) return;
-            var players = FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
-            foreach (var player in players)
-            {
-                if (player.OwnerClientId != riderClientId) continue;
-                player.ExitSpoonWithVelocity(launchVelocity);
-                return;
-            }
+            if (PlayerController.AllPlayers.TryGetValue(riderClientId, out var localPlayer))
+                localPlayer.ExitSpoonWithVelocity(launchVelocity);
         }
 
         [Rpc(SendTo.Owner)]
@@ -176,15 +209,9 @@ namespace Player
         {
             if (interactorClientId == OwnerClientId)
             {
-                var players = FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
-                foreach (var player in players)
+                if (PlayerController.AllPlayers.TryGetValue(interactorClientId, out var player))
                 {
-                    if (player.OwnerClientId == interactorClientId && player.CurrentState == player.ConeState)
-                    {
-                        AttachTo(player);
-                        return;
-                    }
-                        
+                    if (player.CurrentState == player.ConeState) AttachTo(player);
                 }
             }
             else
@@ -199,22 +226,24 @@ namespace Player
         {
             if (NetworkManager.Singleton.LocalClientId != newOwnerClientId) return;
 
-            var players = FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
-            foreach (var player in players)
-            {
-                if (player.OwnerClientId == newOwnerClientId && player.CurrentState == player.ConeState)
-                {
-                    AttachTo(player);
-                    return;
-                }
-            }
+            if (PlayerController.AllPlayers.TryGetValue(newOwnerClientId, out var player))
+                if (player.CurrentState == player.ConeState)  AttachTo(player);
         }
 
         private void OnCarriedChanged(bool previous, bool current)
         {
             foreach (var col in GetComponents<Collider2D>())
                 col.isTrigger = current;
+        
             if (_rb) _rb.bodyType = current ? RigidbodyType2D.Kinematic : RigidbodyType2D.Dynamic;
+
+            if (!current) return;
+            _holdPoint = PlayerController.AllPlayers.TryGetValue(OwnerClientId, out var ownerPlayer) ? ownerPlayer.SpoonHoldPoint : null;
+        }
+        
+        private void OnRiderChanged(ulong previousValue, ulong newValue)
+        {
+            UpdateSpoonSprite(newValue);
         }
     }
 }

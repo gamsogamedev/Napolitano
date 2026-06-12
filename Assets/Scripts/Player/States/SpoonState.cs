@@ -19,6 +19,7 @@ namespace Player.States
             if (!player.Rb) return;
             player.Rb.bodyType = RigidbodyType2D.Kinematic;
             player.Rb.linearVelocity = Vector2.zero;
+            
 
             if (player.IceCreamCollider) player.IceCreamCollider.enabled = false;
             if (player.ConeCollider) player.ConeCollider.enabled = false;

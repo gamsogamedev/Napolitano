@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
+using Player;
 using Unity.Netcode;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
@@ -27,8 +28,10 @@ public class SessionManager : Singleton<SessionManager>
     public string CurrentSessionCode => ActiveSession?.Code; 
 
     const string playerNamePropertyKey = "playerName";
+    const string playerSkinPropertyKey = "playerSkin";
 
     public string LocalPlayerName {  get; private set; }
+    public PlayerSprite LocalPlayerSprite {  get; private set; }
     
     private NetworkManager networkManager;
     
@@ -54,13 +57,18 @@ public class SessionManager : Singleton<SessionManager>
         return new Dictionary<string, PlayerProperty>{{playerNamePropertyKey, playerNameProperty}};
     }
 
-    async UniTask<Dictionary<string, PlayerProperty>> GetPlayerPropertiesAsyncWithName(string playerName)
+    async UniTask<Dictionary<string, PlayerProperty>> GetPlayerPropertiesAsyncWithName(string playerName, PlayerSprite playerSprite)
     {
         
         var playerNameProperty = new PlayerProperty(playerName, VisibilityPropertyOptions.Member);
+        var playerSkinProperty = new PlayerProperty(playerSprite.ToString(), VisibilityPropertyOptions.Member);
         await UniTask.CompletedTask;
         
-        return new Dictionary<string, PlayerProperty>{{playerNamePropertyKey, playerNameProperty}};
+        return new Dictionary<string, PlayerProperty>
+        {
+            {playerNamePropertyKey, playerNameProperty},
+            {playerSkinPropertyKey, playerSkinProperty}
+        };
     }
 
     public string GetLocalPlayerName()
@@ -68,12 +76,18 @@ public class SessionManager : Singleton<SessionManager>
         return LocalPlayerName;
     }
 
-    public async UniTask CreateSessionAsHost(string playerName) 
+    public PlayerSprite GetLocalPlayerSprite()
+    {
+        return LocalPlayerSprite;
+    }
+
+    public async UniTask CreateSessionAsHost(string playerName, PlayerSprite sprite) 
     {
         try 
         {
-            var playerProperties = await GetPlayerPropertiesAsyncWithName(playerName);
+            var playerProperties = await GetPlayerPropertiesAsyncWithName(playerName, sprite);
             LocalPlayerName = playerName;
+            LocalPlayerSprite = sprite;
             
             var options = new SessionOptions()
             {
@@ -92,12 +106,13 @@ public class SessionManager : Singleton<SessionManager>
         }
     }
 
-    public async UniTask JoinSessionByCode(string code, string playerName) 
+    public async UniTask JoinSessionByCode(string code, string playerName, PlayerSprite sprite) 
     {
         try 
         {
-            var playerProperties = await GetPlayerPropertiesAsyncWithName(playerName);
+            var playerProperties = await GetPlayerPropertiesAsyncWithName(playerName, sprite);
             LocalPlayerName = playerName;
+            LocalPlayerSprite = sprite;
 
             var joinOptions = new JoinSessionOptions()
             {
