@@ -29,6 +29,7 @@ public class SessionManager : Singleton<SessionManager>
 
     const string playerNamePropertyKey = "playerName";
     const string playerSkinPropertyKey = "playerSkin";
+    const string playerMaxLevelPropertyKey = "playerMaxLevel";
 
     public string LocalPlayerName {  get; private set; }
     public PlayerSprite LocalPlayerSprite {  get; private set; }
