@@ -1,8 +1,14 @@
+using UnityEngine;
+
 namespace Player.States
 {
     public class IceCreamState : IPlayerState
     {
         private readonly float _speed;
+
+        private float timer;
+        private bool hasMelted;
+        public float time_to_melt = 5f;
 
         public IceCreamState(float speed)
         {
@@ -11,10 +17,28 @@ namespace Player.States
 
         public void EnterState(PlayerController player)
         {
+            timer = 0f;
+            hasMelted = false;
+
         }
 
         public void Execute(PlayerController player)
         {
+
+            timer += Time.deltaTime;
+
+            if (!hasMelted && timer >= time_to_melt) {
+                hasMelted = true;
+
+                PlayerCollision playerCollision = player.GetComponent<PlayerCollision>();
+
+                if (playerCollision != null) {
+                    playerCollision.IceCream_Melted();
+                }
+
+                return;
+            }
+
             if (player.JumpInputThisFrame && player.IsGrounded())
             {
                 var velocity = player.Rb.linearVelocity;
@@ -27,6 +51,8 @@ namespace Player.States
 
         public void ExitState(PlayerController player)
         {
+            timer = 0f;
+            hasMelted = false;
         }
 
         public void HandleMovement(PlayerController player)
