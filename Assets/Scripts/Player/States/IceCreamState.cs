@@ -8,18 +8,29 @@ namespace Player.States
 
         private float timer;
         private bool hasMelted;
-        public float time_to_melt = 5f;
+        private float time_to_melt = 5f;
+        private IceCreamTimerUI timerUI; 
+
 
         public IceCreamState(float speed)
         {
             _speed = speed;
         }
 
-        public void EnterState(PlayerController player)
-        {
+        public void EnterState(PlayerController player) {
             timer = 0f;
             hasMelted = false;
 
+            timerUI = player.GetComponentInChildren<IceCreamTimerUI>();
+
+            if (timerUI == null) {
+                Debug.LogError("IceCreamTimerUI NÃO encontrado no root do Player!");
+                return;
+            }
+
+            Debug.Log("IceCreamTimerUI encontrado. Chamando StartNetworkTimer.");
+
+            timerUI.StartNetworkTimer(5f);
         }
 
         public void Execute(PlayerController player)
@@ -53,6 +64,11 @@ namespace Player.States
         {
             timer = 0f;
             hasMelted = false;
+
+            if (timerUI != null) {
+                timerUI.StopNetworkTimer();
+                timerUI = null;
+            }
         }
 
         public void HandleMovement(PlayerController player)
