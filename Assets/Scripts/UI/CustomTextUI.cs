@@ -3,9 +3,28 @@ using UnityEngine;
 
 namespace UI
 {
-    public class CustomTextUI: MonoBehaviour, ITextButton
+    [RequireComponent(typeof(CustomButton))]
+    public class CustomTextUI: MonoBehaviour
     {
+        private CustomButton customButton;
         [SerializeField] private TextMeshProUGUI text;
+
+        private void Awake()
+        {
+            customButton = GetComponent<CustomButton>();
+        }
+
+        private void OnEnable()
+        {
+            customButton.OnHoverEnter += OnHoverEnter;
+            customButton.OnHoverExit += OnHoverExit;
+        }
+
+        private void OnDisable()
+        {
+            customButton.OnHoverEnter -= OnHoverEnter;
+            customButton.OnHoverExit -= OnHoverExit;
+        }
         
         public void OnHoverEnter()
         {
