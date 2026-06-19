@@ -14,10 +14,6 @@ namespace UI
         [SerializeField] private Sprite idleSprite;
         [SerializeField] private Sprite hoverSprite;
         [SerializeField] private Sprite clickedSprite;
-
-        [Header("Sounds")]
-        [SerializeField] private SoundData hoverSound;
-        [SerializeField] private SoundData clickSound;
     
         [Space(10)]
         [SerializeField] private UnityEvent onClickEvent;
@@ -27,7 +23,7 @@ namespace UI
     
         public event Action OnHoverEnter;
         public event Action OnHoverExit;
-        //private ITextButton textButton;
+        public event Action OnClick;
     
         private void Awake()
         {
@@ -37,7 +33,6 @@ namespace UI
     
         public void OnPointerEnter(PointerEventData eventData)
         {
-            if(hoverSound != null) SoundManager.Instance.CreateSound().Play(hoverSound);
             if(hoverSprite != null)
             {
                 image.sprite = hoverSprite;
@@ -56,21 +51,19 @@ namespace UI
     
         public void OnPointerDown(PointerEventData eventData)
         {
-            if(clickSound != null) SoundManager.Instance.CreateSound().Play(clickSound);
             if(clickedSprite != null) image.sprite = clickedSprite;
+            OnClick?.Invoke();
         }
 
         public void OnPointerUp(PointerEventData eventData)
         {
-            if (isHovering && hoverSprite)
+            if (isHovering)
             {
-                image.sprite = hoverSprite;
-                OnHoverEnter?.Invoke();
+                if (hoverSprite != null) image.sprite = hoverSprite;
             }
             else
             {
                 image.sprite = idleSprite;
-                OnHoverExit?.Invoke();
             }
         }
 

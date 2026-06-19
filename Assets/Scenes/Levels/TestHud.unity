@@ -406,6 +406,7 @@ GameObject:
   - component: {fileID: 273964787}
   - component: {fileID: 273964786}
   - component: {fileID: 273964785}
+  - component: {fileID: 273964789}
   - component: {fileID: 273964788}
   m_Layer: 5
   m_Name: RestartMap
@@ -449,8 +450,6 @@ MonoBehaviour:
   idleSprite: {fileID: 7219830438018454713, guid: f268422f70fe48898b6548646978a0e8, type: 3}
   hoverSprite: {fileID: 3100856887975758742, guid: f268422f70fe48898b6548646978a0e8, type: 3}
   clickedSprite: {fileID: 4520375771122408675, guid: f268422f70fe48898b6548646978a0e8, type: 3}
-  hoverSound: {fileID: 11400000, guid: 3eabeb2da0ef4ec17a92e5a4f142a2b4, type: 2}
-  clickSound: {fileID: 11400000, guid: dfd8cc8de2a14f414aeea28589f1031b, type: 2}
   onClickEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -493,6 +492,20 @@ CanvasRenderer:
   m_GameObject: {fileID: 273964783}
   m_CullTransparentMesh: 1
 --- !u!114 &273964788
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 273964783}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0be415f114408d3609fde397b2acedf6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UI.ButtonSound
+  hoverSound: {fileID: 11400000, guid: 3eabeb2da0ef4ec17a92e5a4f142a2b4, type: 2}
+  clickSound: {fileID: 11400000, guid: dfd8cc8de2a14f414aeea28589f1031b, type: 2}
+--- !u!114 &273964789
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1053,7 +1066,6 @@ GameObject:
   - component: {fileID: 756517815}
   - component: {fileID: 756517817}
   - component: {fileID: 756517816}
-  - component: {fileID: 756517819}
   - component: {fileID: 756517818}
   m_Layer: 5
   m_Name: PauseHUD
@@ -1134,52 +1146,9 @@ MonoBehaviour:
   idleSprite: {fileID: -8424044941456777973, guid: adf2c94e6b903b5d7ae8e0634bb5a9e1, type: 3}
   hoverSprite: {fileID: -8424044941456777973, guid: adf2c94e6b903b5d7ae8e0634bb5a9e1, type: 3}
   clickedSprite: {fileID: -1812268355382517023, guid: adf2c94e6b903b5d7ae8e0634bb5a9e1, type: 3}
-  hoverSound: {fileID: 11400000, guid: 3eabeb2da0ef4ec17a92e5a4f142a2b4, type: 2}
-  clickSound: {fileID: 11400000, guid: dfd8cc8de2a14f414aeea28589f1031b, type: 2}
   onClickEvent:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &756517819
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 756517814}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a98125502f715b4b83cfb77b434e436, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Selectable
-  m_Navigation:
-    m_Mode: 0
-    m_WrapAround: 0
-    m_SelectOnUp: {fileID: 0}
-    m_SelectOnDown: {fileID: 0}
-    m_SelectOnLeft: {fileID: 0}
-    m_SelectOnRight: {fileID: 0}
-  m_Transition: 0
-  m_Colors:
-    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
-    m_ColorMultiplier: 1
-    m_FadeDuration: 0.1
-  m_SpriteState:
-    m_HighlightedSprite: {fileID: 0}
-    m_PressedSprite: {fileID: 0}
-    m_SelectedSprite: {fileID: 0}
-    m_DisabledSprite: {fileID: 0}
-  m_AnimationTriggers:
-    m_NormalTrigger: Normal
-    m_HighlightedTrigger: Highlighted
-    m_PressedTrigger: Pressed
-    m_SelectedTrigger: Selected
-    m_DisabledTrigger: Disabled
-  m_Interactable: 1
-  m_TargetGraphic: {fileID: 756517816}
 --- !u!1 &918670895
 GameObject:
   m_ObjectHideFlags: 0
@@ -1651,6 +1620,7 @@ GameObject:
   - component: {fileID: 1432672684}
   - component: {fileID: 1432672683}
   - component: {fileID: 1432672682}
+  - component: {fileID: 1432672686}
   - component: {fileID: 1432672685}
   m_Layer: 5
   m_Name: Quit
@@ -1694,8 +1664,6 @@ MonoBehaviour:
   idleSprite: {fileID: 7219830438018454713, guid: f268422f70fe48898b6548646978a0e8, type: 3}
   hoverSprite: {fileID: 3100856887975758742, guid: f268422f70fe48898b6548646978a0e8, type: 3}
   clickedSprite: {fileID: 4520375771122408675, guid: f268422f70fe48898b6548646978a0e8, type: 3}
-  hoverSound: {fileID: 11400000, guid: 3eabeb2da0ef4ec17a92e5a4f142a2b4, type: 2}
-  clickSound: {fileID: 11400000, guid: dfd8cc8de2a14f414aeea28589f1031b, type: 2}
   onClickEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -1738,6 +1706,20 @@ CanvasRenderer:
   m_GameObject: {fileID: 1432672680}
   m_CullTransparentMesh: 1
 --- !u!114 &1432672685
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1432672680}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0be415f114408d3609fde397b2acedf6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UI.ButtonSound
+  hoverSound: {fileID: 11400000, guid: 3eabeb2da0ef4ec17a92e5a4f142a2b4, type: 2}
+  clickSound: {fileID: 11400000, guid: dfd8cc8de2a14f414aeea28589f1031b, type: 2}
+--- !u!114 &1432672686
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2029,6 +2011,7 @@ GameObject:
   - component: {fileID: 1658287269}
   - component: {fileID: 1658287268}
   - component: {fileID: 1658287267}
+  - component: {fileID: 1658287271}
   - component: {fileID: 1658287270}
   m_Layer: 5
   m_Name: Resume
@@ -2072,8 +2055,6 @@ MonoBehaviour:
   idleSprite: {fileID: 7219830438018454713, guid: f268422f70fe48898b6548646978a0e8, type: 3}
   hoverSprite: {fileID: 3100856887975758742, guid: f268422f70fe48898b6548646978a0e8, type: 3}
   clickedSprite: {fileID: 4520375771122408675, guid: f268422f70fe48898b6548646978a0e8, type: 3}
-  hoverSound: {fileID: 11400000, guid: 3eabeb2da0ef4ec17a92e5a4f142a2b4, type: 2}
-  clickSound: {fileID: 11400000, guid: dfd8cc8de2a14f414aeea28589f1031b, type: 2}
   onClickEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -2116,6 +2097,20 @@ CanvasRenderer:
   m_GameObject: {fileID: 1658287265}
   m_CullTransparentMesh: 1
 --- !u!114 &1658287270
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1658287265}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0be415f114408d3609fde397b2acedf6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UI.ButtonSound
+  hoverSound: {fileID: 11400000, guid: 3eabeb2da0ef4ec17a92e5a4f142a2b4, type: 2}
+  clickSound: {fileID: 11400000, guid: dfd8cc8de2a14f414aeea28589f1031b, type: 2}
+--- !u!114 &1658287271
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2518,6 +2513,7 @@ GameObject:
   - component: {fileID: 2138896663}
   - component: {fileID: 2138896662}
   - component: {fileID: 2138896661}
+  - component: {fileID: 2138896665}
   - component: {fileID: 2138896664}
   m_Layer: 5
   m_Name: Options
@@ -2561,8 +2557,6 @@ MonoBehaviour:
   idleSprite: {fileID: 7219830438018454713, guid: f268422f70fe48898b6548646978a0e8, type: 3}
   hoverSprite: {fileID: 3100856887975758742, guid: f268422f70fe48898b6548646978a0e8, type: 3}
   clickedSprite: {fileID: 4520375771122408675, guid: f268422f70fe48898b6548646978a0e8, type: 3}
-  hoverSound: {fileID: 11400000, guid: 3eabeb2da0ef4ec17a92e5a4f142a2b4, type: 2}
-  clickSound: {fileID: 11400000, guid: dfd8cc8de2a14f414aeea28589f1031b, type: 2}
   onClickEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -2605,6 +2599,20 @@ CanvasRenderer:
   m_GameObject: {fileID: 2138896659}
   m_CullTransparentMesh: 1
 --- !u!114 &2138896664
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2138896659}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0be415f114408d3609fde397b2acedf6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UI.ButtonSound
+  hoverSound: {fileID: 11400000, guid: 3eabeb2da0ef4ec17a92e5a4f142a2b4, type: 2}
+  clickSound: {fileID: 11400000, guid: dfd8cc8de2a14f414aeea28589f1031b, type: 2}
+--- !u!114 &2138896665
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

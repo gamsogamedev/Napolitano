@@ -5,7 +5,7 @@ namespace UI
 {
     [RequireComponent(typeof(CustomButton))]
     public class CustomTextUI: MonoBehaviour
-    {
+    { 
         private CustomButton customButton;
         [SerializeField] private TextMeshProUGUI text;
 
