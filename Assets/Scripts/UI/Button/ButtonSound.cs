@@ -20,23 +20,23 @@ namespace UI
         private void OnEnable()
         {
             customButton.OnHoverEnter += OnHoverEnter;
-            customButton.OnClick += OnClick;
+            customButton.OnStartClick += OnStartClick;
         }
 
         private void OnDisable()
         {
             customButton.OnHoverEnter -= OnHoverEnter;
-            customButton.OnClick -= OnClick;
+            customButton.OnStartClick -= OnStartClick;
         }
         
         private void OnHoverEnter()
         {
-            SoundManager.Instance.CreateSound().Play(hoverSound);
+            if (hoverSound) SoundManager.Instance.CreateSound().Play(hoverSound);
         }
         
-        private void OnClick()
+        private void OnStartClick()
         {
-            SoundManager.Instance.CreateSound().Play(clickSound);
+            if (clickSound) SoundManager.Instance.CreateSound().Play(clickSound);
         }
     }
 }

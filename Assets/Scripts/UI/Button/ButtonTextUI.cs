@@ -4,7 +4,7 @@ using UnityEngine;
 namespace UI
 {
     [RequireComponent(typeof(CustomButton))]
-    public class CustomTextUI: MonoBehaviour
+    public class ButtonTextUI: MonoBehaviour
     { 
         private CustomButton customButton;
         [SerializeField] private TextMeshProUGUI text;

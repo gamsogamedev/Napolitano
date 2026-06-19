@@ -23,7 +23,7 @@ namespace UI
     
         public event Action OnHoverEnter;
         public event Action OnHoverExit;
-        public event Action OnClick;
+        public event Action OnStartClick;
     
         private void Awake()
         {
@@ -52,7 +52,7 @@ namespace UI
         public void OnPointerDown(PointerEventData eventData)
         {
             if(clickedSprite != null) image.sprite = clickedSprite;
-            OnClick?.Invoke();
+            OnStartClick?.Invoke();
         }
 
         public void OnPointerUp(PointerEventData eventData)
