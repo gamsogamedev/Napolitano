@@ -71,6 +71,9 @@ public class SessionManager : Singleton<SessionManager>
         
         PlayerSprite playerSprite = characterIndex == 0 ? PlayerSprite.Strawberry : PlayerSprite.Vanilla;
 
+        //atualiza variaável local
+        LocalPlayerSprite = playerSprite;
+
         var property = new PlayerProperty(playerSprite.ToString(),VisibilityPropertyOptions.Member);
 
         ActiveSession.CurrentPlayer.SetProperty(playerSkinPropertyKey,property);
