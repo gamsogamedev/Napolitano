@@ -16,7 +16,7 @@ namespace UI
         [SerializeField] private Sprite clickedSprite;
     
         [Space(10)]
-        [SerializeField] private UnityEvent onClickEvent;
+        [SerializeField] public UnityEvent onClickEvent;
     
         private Image image;
         private bool isHovering = false;
@@ -70,6 +70,8 @@ namespace UI
         public void OnPointerClick(PointerEventData eventData)
         {
             onClickEvent?.Invoke();
+
+            image.sprite = idleSprite;
         }
     }
 }
