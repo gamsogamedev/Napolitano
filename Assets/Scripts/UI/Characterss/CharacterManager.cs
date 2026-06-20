@@ -1,3 +1,4 @@
+using Player;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,11 +20,7 @@ public class CharacterManager : MonoBehaviour
 
     private int sessionOwnerPrevIndex = 0;
     private int clientPrevIndex = 0;
-
-    private int hostSelectedIndex = -1;
-    private int clientSelectedIndex = -1;
-
-
+    
     private void Start()
     {
         if (SessionManager.Instance.ActiveSession != null)
@@ -32,49 +29,54 @@ public class CharacterManager : MonoBehaviour
         }
     }
 
-    private void OnEnable()
-    {
-        RegisterEvents();
-        
-        startGameButton.onClick.AddListener(OnStartGameClicked);
-        
-        InitializeUI();
-    }
+    #region RegisterEvents
 
-    private void OnDisable()
-    {
-        startGameButton.onClick.RemoveListener(OnStartGameClicked);
+        private void OnEnable()
+        {
+            RegisterEvents();
+                
+            startGameButton.onClick.AddListener(OnStartGameClicked);
+                
+            InitializeUI();
+        }
 
-        UnregisterEvents();
-    }
+        private void OnDisable()
+        {
+            startGameButton.onClick.RemoveListener(OnStartGameClicked);
 
-    private void RegisterEvents()
-    {
-        sessionOwnerPanel.OnPreviusPressed += OnSessionOwnerPreviusPressed;
-        sessionOwnerPanel.OnNextPressed += OnSessionOwnerNextPressed;
-        sessionOwnerPanel.OnSelectPressed += OnSessionOwnerSelectPressed;
+            UnregisterEvents();
+        }
 
-        clientPanel.OnPreviusPressed += OnClientPreviusPressed;
-        clientPanel.OnNextPressed += OnClientNextPressed;
-        clientPanel.OnSelectPressed += OnClientSelectPressed;
-    }
+        private void RegisterEvents()
+        {
+            sessionOwnerPanel.OnPreviusPressed += OnSessionOwnerPreviusPressed;
+            sessionOwnerPanel.OnNextPressed += OnSessionOwnerNextPressed;
+            sessionOwnerPanel.OnSelectPressed += OnSessionOwnerSelectPressed;
 
-    private void UnregisterEvents()
-    {
-        sessionOwnerPanel.OnPreviusPressed -= OnSessionOwnerPreviusPressed;
-        sessionOwnerPanel.OnNextPressed -= OnSessionOwnerNextPressed;
-        sessionOwnerPanel.OnSelectPressed -= OnSessionOwnerSelectPressed;
+            clientPanel.OnPreviusPressed += OnClientPreviusPressed;
+            clientPanel.OnNextPressed += OnClientNextPressed;
+            clientPanel.OnSelectPressed += OnClientSelectPressed;
+        }
 
-        clientPanel.OnPreviusPressed -= OnClientPreviusPressed;
-        clientPanel.OnNextPressed -= OnClientNextPressed;
-        clientPanel.OnSelectPressed -= OnClientSelectPressed;
-    }
+        private void UnregisterEvents()
+        {
+            sessionOwnerPanel.OnPreviusPressed -= OnSessionOwnerPreviusPressed;
+            sessionOwnerPanel.OnNextPressed -= OnSessionOwnerNextPressed;
+            sessionOwnerPanel.OnSelectPressed -= OnSessionOwnerSelectPressed;
+
+            clientPanel.OnPreviusPressed -= OnClientPreviusPressed;
+            clientPanel.OnNextPressed -= OnClientNextPressed;
+            clientPanel.OnSelectPressed -= OnClientSelectPressed;
+        }
+
+    #endregion
 
     private void OnPlayerPropertiesChanged()
     {
+        Debug.Log("Trocou propriedade");
         LoadRemotePlayerSelection();
     }
-
+    
     private void LoadRemotePlayerSelection()
     {
         if (SessionManager.Instance.ActiveSession == null)
@@ -82,109 +84,109 @@ public class CharacterManager : MonoBehaviour
 
         foreach (var player in SessionManager.Instance.ActiveSession.Players)
         {
-            if (!player.Properties.TryGetValue("selectedCharacter", out var property))
+            if (!player.Properties.TryGetValue(SessionManager.playerSkinPropertyKey, out var property))
                 continue;
-
-            int index = int.Parse(property.Value);
+            
+            int index = property.Value == nameof(PlayerSprite.Strawberry) ? 0 : 1;
+            
+            Debug.Log(index);
 
             // ignora eu mesmo
-            if (player.Id == SessionManager.Instance.ActiveSession.CurrentPlayer.Id)
-                continue;
-
-            Character character = dataBase.GetCharacter(index);
-
-            bool isHost = NetworkManager.Singleton.LocalClient.IsSessionOwner;
-
-            if (isHost)
+            if (player.Id != SessionManager.Instance.ActiveSession.CurrentPlayer.Id)
             {
-                // host vê a escolha do cliente
-                clientPanel.SetCharacter(character);
+                Character character = dataBase.GetCharacter(index);
+
+                bool isHost = NetworkManager.Singleton.LocalClient.IsSessionOwner;
+
+                if (isHost)
+                {
+                    // host vê a escolha do cliente
+                    clientPanel.SetCharacter(character);
+                }
+                else
+                {
+                    // cliente vê a escolha do host
+                    sessionOwnerPanel.SetCharacter(character);
+                }
             }
-            else
+        }
+    }
+
+    #region ButtonBehaviour
+
+        private void OnSessionOwnerPreviusPressed()
+        {
+            sessionOwnerPrevIndex--;
+            if (sessionOwnerPrevIndex < 0)
             {
-                // cliente vê a escolha do host
-                sessionOwnerPanel.SetCharacter(character);
+                sessionOwnerPrevIndex = dataBase.characterCount - 1;
             }
+
+            Character character = dataBase.GetCharacter(sessionOwnerPrevIndex);
+
+            sessionOwnerPanel.SetCharacter(character);
         }
 
-        CheckStartButton();
-    }
-
-    private void OnSessionOwnerPreviusPressed()
-    {
-        sessionOwnerPrevIndex--;
-        if (sessionOwnerPrevIndex < 0)
+        private void OnSessionOwnerNextPressed()
         {
-            sessionOwnerPrevIndex = dataBase.characterCount - 1;
+            sessionOwnerPrevIndex++;
+            if (sessionOwnerPrevIndex >= dataBase.characterCount)
+            {
+                sessionOwnerPrevIndex = 0;
+            }
+
+            Character character = dataBase.GetCharacter(sessionOwnerPrevIndex);
+
+            sessionOwnerPanel.SetCharacter(character);
         }
 
-        Character character = dataBase.GetCharacter(sessionOwnerPrevIndex);
-
-        sessionOwnerPanel.SetCharacter(character);
-    }
-
-    private void OnSessionOwnerNextPressed()
-    {
-        sessionOwnerPrevIndex++;
-        if (sessionOwnerPrevIndex >= dataBase.characterCount)
+        private async void OnSessionOwnerSelectPressed()
         {
-            sessionOwnerPrevIndex = 0;
+
+            await SessionManager.Instance.UpdateSelectedCharacter(sessionOwnerPrevIndex);
+
+            sessionOwnerPanel.SetInteractable(false);
+
+            CheckStartButton();
         }
 
-        Character character = dataBase.GetCharacter(sessionOwnerPrevIndex);
-
-        sessionOwnerPanel.SetCharacter(character);
-    }
-
-    private async void OnSessionOwnerSelectPressed()
-    {
-        //if(IsCharacterSelected) { return; }
-        hostSelectedIndex = sessionOwnerPrevIndex;
-
-        await SessionManager.Instance.UpdateSelectedCharacter(sessionOwnerPrevIndex);
-
-        sessionOwnerPanel.SetInteractable(false);
-
-        CheckStartButton();
-    }
-
-    private void OnClientPreviusPressed()
-    {
-        clientPrevIndex--;
-        if (clientPrevIndex < 0)
+        private void OnClientPreviusPressed()
         {
-            clientPrevIndex = dataBase.characterCount - 1;
+            clientPrevIndex--;
+            if (clientPrevIndex < 0)
+            {
+                clientPrevIndex = dataBase.characterCount - 1;
+            }
+
+            Character character = dataBase.GetCharacter(clientPrevIndex);
+
+            clientPanel.SetCharacter(character);
         }
 
-        Character character = dataBase.GetCharacter(clientPrevIndex);
-
-        clientPanel.SetCharacter(character);
-    }
-
-    private void OnClientNextPressed()
-    {
-        clientPrevIndex++;
-        if (clientPrevIndex >= dataBase.characterCount)
+        private void OnClientNextPressed()
         {
-            clientPrevIndex = 0;
+            clientPrevIndex++;
+            if (clientPrevIndex >= dataBase.characterCount)
+            {
+                clientPrevIndex = 0;
+            }
+
+            Character character = dataBase.GetCharacter(clientPrevIndex);
+
+            clientPanel.SetCharacter(character);
         }
 
-        Character character = dataBase.GetCharacter(clientPrevIndex);
+        private async void OnClientSelectPressed()
+        {
 
-        clientPanel.SetCharacter(character);
-    }
+            await SessionManager.Instance.UpdateSelectedCharacter(clientPrevIndex);
 
-    private async void OnClientSelectPressed()
-    {
-        //if(IsCharacterSelected) { return; }
-        clientSelectedIndex = clientPrevIndex;
+            sessionOwnerPanel.SetInteractable(false);
 
-        await SessionManager.Instance.UpdateSelectedCharacter(clientPrevIndex);
+            CheckStartButton();
+        }
 
-        sessionOwnerPanel.SetInteractable(false);
-
-        CheckStartButton();
-    }
+    #endregion
 
     private void InitializeUI()
     {
@@ -204,16 +206,14 @@ public class CharacterManager : MonoBehaviour
             return;
         }
         
-        sessionOwnerPanel.SetCharacter(dataBase.GetCharacter(sessionOwnerPrevIndex));
-        clientPanel.SetCharacter(dataBase.GetCharacter(clientPrevIndex));
+        //sessionOwnerPanel.SetCharacter(dataBase.GetCharacter(sessionOwnerPrevIndex));
+        //clientPanel.SetCharacter(dataBase.GetCharacter(clientPrevIndex));
 
         InitializePlayerNames();
 
         ConfigureLocalPermissions();
 
         LoadRemotePlayerSelection();
-
-        CheckStartButton();
     }
 
     private void CheckStartButton()
@@ -226,26 +226,28 @@ public class CharacterManager : MonoBehaviour
 
         foreach (var player in SessionManager.Instance.ActiveSession.Players)
         {
-            if (player.Properties.TryGetValue("selectedCharacter", out var property))
-            {
-                int index = int.Parse(property.Value);
+            if (!player.Properties.TryGetValue(SessionManager.playerSkinPropertyKey, out var property))
+                continue;
+            
+            int index = property.Value == nameof(PlayerSprite.Strawberry) ? 0 : 1;
+            
+            Debug.Log(index);
 
-                if (player.Id == SessionManager.Instance.ActiveSession.CurrentPlayer.Id)
-                {
-                    // minha escolha
-                    if (NetworkManager.Singleton.LocalClient.IsSessionOwner)
-                        hostSelected = true;
-                    else
-                        clientSelected = true;
-                }
+            if (player.Id == SessionManager.Instance.ActiveSession.CurrentPlayer.Id)
+            {
+                // minha escolha
+                if (NetworkManager.Singleton.LocalClient.IsSessionOwner)
+                    hostSelected = true;
                 else
-                {
-                    // escolha do outro jogador
-                    if (NetworkManager.Singleton.LocalClient.IsSessionOwner)
-                        clientSelected = true;
-                    else
-                        hostSelected = true;
-                }
+                    clientSelected = true;
+            }
+            else
+            {
+                // escolha do outro jogador
+                if (NetworkManager.Singleton.LocalClient.IsSessionOwner)
+                    clientSelected = true;
+                else
+                    hostSelected = true;
             }
         }
 

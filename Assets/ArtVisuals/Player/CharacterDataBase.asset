@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: CharacterDataBase
   m_EditorClassIdentifier: Assembly-CSharp::CharacterDataBase
   character:
-  - name: Morango
-    skin: {fileID: 21300000, guid: ff9152fb87de3ba53a27bef2b225ad6b, type: 3}
-  - name: Creme
-    skin: {fileID: 21300000, guid: 13609f4e3f8043544b912e5683d41c39, type: 3}
+  - characterName: Morango
+    characterSkin: {fileID: 21300000, guid: ff9152fb87de3ba53a27bef2b225ad6b, type: 3}
+  - characterName: Banilha
+    characterSkin: {fileID: 21300000, guid: 13609f4e3f8043544b912e5683d41c39, type: 3}

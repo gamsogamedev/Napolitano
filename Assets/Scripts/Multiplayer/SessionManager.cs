@@ -28,7 +28,7 @@ public class SessionManager : Singleton<SessionManager>
     public string CurrentSessionCode => ActiveSession?.Code; 
 
     const string playerNamePropertyKey = "playerName";
-    const string playerSkinPropertyKey = "playerSkin";
+    public const string playerSkinPropertyKey = "playerSkin";
     const string playerMaxLevelPropertyKey = "playerMaxLevel";
     const string playerSelectedCharacterKey = "selectedCharacter";
 
@@ -66,20 +66,16 @@ public class SessionManager : Singleton<SessionManager>
     public async UniTask UpdateSelectedCharacter(int characterIndex)
     {
         if (ActiveSession == null) { return; }
+        
+        Debug.Log("UpdateSelectedCharacter: " + characterIndex);
+        
+        PlayerSprite playerSprite = characterIndex == 0 ? PlayerSprite.Strawberry : PlayerSprite.Vanilla;
 
-        var property = new PlayerProperty(characterIndex.ToString(),VisibilityPropertyOptions.Member);
+        var property = new PlayerProperty(playerSprite.ToString(),VisibilityPropertyOptions.Member);
 
-        ActiveSession.CurrentPlayer.SetProperty(playerSelectedCharacterKey,property);
+        ActiveSession.CurrentPlayer.SetProperty(playerSkinPropertyKey,property);
 
         await ActiveSession.SaveCurrentPlayerDataAsync();
-    }
-
-    async UniTask<Dictionary<string, PlayerProperty>> GetPlayerPropertiesAsync()
-    {
-        var playerName = await AuthenticationService.Instance.GetPlayerNameAsync();
-        var playerNameProperty = new PlayerProperty(playerName, VisibilityPropertyOptions.Member);
-        
-        return new Dictionary<string, PlayerProperty>{{playerNamePropertyKey, playerNameProperty}};
     }
 
     async UniTask<Dictionary<string, PlayerProperty>> GetPlayerPropertiesAsyncWithName(string playerName, PlayerSprite playerSprite)
@@ -87,12 +83,14 @@ public class SessionManager : Singleton<SessionManager>
         
         var playerNameProperty = new PlayerProperty(playerName, VisibilityPropertyOptions.Member);
         var playerSkinProperty = new PlayerProperty(playerSprite.ToString(), VisibilityPropertyOptions.Member);
+        var playerSelectedCharacterProperty = new PlayerProperty("teste", VisibilityPropertyOptions.Member);
         await UniTask.CompletedTask;
         
         return new Dictionary<string, PlayerProperty>
         {
             {playerNamePropertyKey, playerNameProperty},
-            {playerSkinPropertyKey, playerSkinProperty}
+            {playerSkinPropertyKey, playerSkinProperty},
+            {playerSelectedCharacterKey, playerSelectedCharacterProperty}
         };
     }
 
