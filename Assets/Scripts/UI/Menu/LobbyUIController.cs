@@ -15,7 +15,7 @@ public class LobbyUIController : MonoBehaviour
 
     [Header("Host Buttons")]
     [SerializeField] private Button createSessionButton;
-    [SerializeField] private Button startGameButton;
+    [SerializeField] private Button continueGameButton;
     
     [Header("Client Buttons")]
     [SerializeField] private TMP_InputField joinCodeInput;
@@ -35,7 +35,7 @@ public class LobbyUIController : MonoBehaviour
     {
         createSessionButton.onClick.AddListener(OnCreateSessionClicked);
         joinSessionButton.onClick.AddListener(OnJoinSessionClicked);
-        startGameButton.onClick.AddListener(OnStartGameClicked);
+        continueGameButton.onClick.AddListener(OnContinueGameClicked);
         exitGameButton.onClick.AddListener(OnExitGameClicked);
     }
 
@@ -43,7 +43,7 @@ public class LobbyUIController : MonoBehaviour
     {
         createSessionButton.onClick.RemoveListener(OnCreateSessionClicked);
         joinSessionButton.onClick.RemoveListener(OnJoinSessionClicked);
-        startGameButton.onClick.RemoveListener(OnStartGameClicked);
+        continueGameButton.onClick.RemoveListener(OnContinueGameClicked);
         exitGameButton.onClick.RemoveListener(OnExitGameClicked);
 
         UnsubscribeNetworkEvents();
@@ -51,7 +51,7 @@ public class LobbyUIController : MonoBehaviour
 
     private void Start()
     {
-        startGameButton.gameObject.SetActive(false);
+        continueGameButton.gameObject.SetActive(false);
         roomCodeInput.gameObject.SetActive(false);
         networkManager = NetworkManager.Singleton;
     }
@@ -127,13 +127,13 @@ public class LobbyUIController : MonoBehaviour
             }
         }
         
-        private void OnStartGameClicked()
+        private void OnContinueGameClicked()
         {
             bool isSessionOwner = networkManager.LocalClient != null && networkManager.LocalClient.IsSessionOwner;
 
             if (isSessionOwner && networkManager.ConnectedClientsIds.Count == 2)
             {
-                startGameButton.interactable = false;
+                continueGameButton.interactable = false;
                 networkManager.SceneManager.LoadScene(gameSceneName, UnityEngine.SceneManagement.LoadSceneMode.Single);
             }
         }
@@ -195,11 +195,11 @@ public class LobbyUIController : MonoBehaviour
 
             if (isSessionOwner)
             {
-                startGameButton.gameObject.SetActive(true);
+                continueGameButton.gameObject.SetActive(true);
 
                 int currentPlayerCount = networkManager.ConnectedClientsIds.Count;
 
-                startGameButton.interactable = (currentPlayerCount == 2);
+                continueGameButton.interactable = (currentPlayerCount == 2);
 
                 if (currentPlayerCount == 2)
                 {
@@ -215,7 +215,7 @@ public class LobbyUIController : MonoBehaviour
             }
             else
             {
-                startGameButton.gameObject.SetActive(false);
+                continueGameButton.gameObject.SetActive(false);
             }
         }
 

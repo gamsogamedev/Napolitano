@@ -24,12 +24,13 @@ public class SessionManager : Singleton<SessionManager>
             Debug.Log("Active Session: " + (activeSession != null ? activeSession.Id : "None"));
         }
     }
-    
+
     public string CurrentSessionCode => ActiveSession?.Code; 
 
     const string playerNamePropertyKey = "playerName";
     const string playerSkinPropertyKey = "playerSkin";
     const string playerMaxLevelPropertyKey = "playerMaxLevel";
+    const string playerSelectedCharacterKey = "selectedCharacter";
 
     public string LocalPlayerName {  get; private set; }
     public PlayerSprite LocalPlayerSprite {  get; private set; }
@@ -48,6 +49,29 @@ public class SessionManager : Singleton<SessionManager>
         {
             Debug.LogException(e);
         }
+    }
+
+    public async UniTask UpdatePlayerData(string playerName, PlayerSprite sprite)
+    {
+        LocalPlayerName = playerName;
+        LocalPlayerSprite = sprite;
+
+        var properties = await GetPlayerPropertiesAsyncWithName(playerName, sprite);
+
+        ActiveSession.CurrentPlayer.SetProperties(properties);
+
+        await ActiveSession.SaveCurrentPlayerDataAsync();
+    }
+
+    public async UniTask UpdateSelectedCharacter(int characterIndex)
+    {
+        if (ActiveSession == null) { return; }
+
+        var property = new PlayerProperty(characterIndex.ToString(),VisibilityPropertyOptions.Member);
+
+        ActiveSession.CurrentPlayer.SetProperty(playerSelectedCharacterKey,property);
+
+        await ActiveSession.SaveCurrentPlayerDataAsync();
     }
 
     async UniTask<Dictionary<string, PlayerProperty>> GetPlayerPropertiesAsync()
@@ -134,7 +158,7 @@ public class SessionManager : Singleton<SessionManager>
         if (ActiveSession != null)
         {
             ActiveSession.PlayerLeaving += HandlePlayerLeft;
-            
+
             if (NetworkManager.Singleton != null)
             {
                 NetworkManager.Singleton.OnClientDisconnectCallback += HandleLocalDisconnect;
