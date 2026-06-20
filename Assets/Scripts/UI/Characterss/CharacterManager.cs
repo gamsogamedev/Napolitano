@@ -293,18 +293,11 @@ public class CharacterManager : MonoBehaviour
 
     private void OnStartGameClicked()
     {
-        Debug.Log("START CLICADO");
-
         bool isSessionOwner = NetworkManager.Singleton.LocalClient != null && NetworkManager.Singleton.LocalClient.IsSessionOwner;
-
-        Debug.Log($"IsSessionOwner: {isSessionOwner}");
-        Debug.Log($"ConnectedClients: {NetworkManager.Singleton.ConnectedClientsIds.Count}");
 
         if (isSessionOwner && NetworkManager.Singleton.ConnectedClientsIds.Count == 2)
         {
             startGameButton.interactable = false;
-
-            Debug.Log("CARREGANDO CENA");
 
             NetworkManager.Singleton.SceneManager.LoadScene(gameSceneName, UnityEngine.SceneManagement.LoadSceneMode.Single);
         }
