@@ -30,7 +30,7 @@ public class SessionManager : Singleton<SessionManager>
     const string playerNamePropertyKey = "playerName";
     public const string playerSkinPropertyKey = "playerSkin";
     const string playerMaxLevelPropertyKey = "playerMaxLevel";
-    const string playerSelectedCharacterKey = "selectedCharacter";
+    public const string playerReadyPropertyKey = "playerReady";
 
     public string LocalPlayerName {  get; private set; }
     public PlayerSprite LocalPlayerSprite {  get; private set; }
@@ -78,19 +78,30 @@ public class SessionManager : Singleton<SessionManager>
         await ActiveSession.SaveCurrentPlayerDataAsync();
     }
 
+    public async UniTask UpdatePlayerReady(bool ready)
+    {
+        if(ActiveSession == null) { return; }
+
+        var property = new PlayerProperty(ready.ToString(), VisibilityPropertyOptions.Member);
+
+        ActiveSession.CurrentPlayer.SetProperty(playerReadyPropertyKey, property);
+
+        await ActiveSession.SaveCurrentPlayerDataAsync();
+    }
+
     async UniTask<Dictionary<string, PlayerProperty>> GetPlayerPropertiesAsyncWithName(string playerName, PlayerSprite playerSprite)
     {
         
         var playerNameProperty = new PlayerProperty(playerName, VisibilityPropertyOptions.Member);
         var playerSkinProperty = new PlayerProperty(playerSprite.ToString(), VisibilityPropertyOptions.Member);
-        var playerSelectedCharacterProperty = new PlayerProperty("teste", VisibilityPropertyOptions.Member);
+        var playerReadyProperty = new PlayerProperty("false", VisibilityPropertyOptions.Member);
         await UniTask.CompletedTask;
         
         return new Dictionary<string, PlayerProperty>
         {
             {playerNamePropertyKey, playerNameProperty},
             {playerSkinPropertyKey, playerSkinProperty},
-            {playerSelectedCharacterKey, playerSelectedCharacterProperty}
+            {playerReadyPropertyKey, playerReadyProperty}
         };
     }
 

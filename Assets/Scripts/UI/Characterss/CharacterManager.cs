@@ -75,6 +75,7 @@ public class CharacterManager : MonoBehaviour
     {
         Debug.Log("Trocou propriedade");
         LoadRemotePlayerSelection();
+        CheckStartButton();
     }
     
     private void LoadRemotePlayerSelection()
@@ -145,9 +146,9 @@ public class CharacterManager : MonoBehaviour
 
             await SessionManager.Instance.UpdateSelectedCharacter(sessionOwnerPrevIndex);
 
-            sessionOwnerPanel.SetInteractable(false);
+            await SessionManager.Instance.UpdatePlayerReady(true);
 
-            CheckStartButton();
+            sessionOwnerPanel.SetInteractable(false);
         }
 
         private void OnClientPreviusPressed()
@@ -181,9 +182,9 @@ public class CharacterManager : MonoBehaviour
 
             await SessionManager.Instance.UpdateSelectedCharacter(clientPrevIndex);
 
-            sessionOwnerPanel.SetInteractable(false);
+            await SessionManager.Instance.UpdatePlayerReady(true);
 
-            CheckStartButton();
+            clientPanel.SetInteractable(false);
         }
 
     #endregion
@@ -221,37 +222,24 @@ public class CharacterManager : MonoBehaviour
         if (SessionManager.Instance.ActiveSession == null)
             return;
 
-        bool hostSelected = false;
-        bool clientSelected = false;
+        bool everyoneReady = true;
 
         foreach (var player in SessionManager.Instance.ActiveSession.Players)
         {
-            if (!player.Properties.TryGetValue(SessionManager.playerSkinPropertyKey, out var property))
-                continue;
-            
-            int index = property.Value == nameof(PlayerSprite.Strawberry) ? 0 : 1;
-            
-            Debug.Log(index);
-
-            if (player.Id == SessionManager.Instance.ActiveSession.CurrentPlayer.Id)
+            if (!player.Properties.TryGetValue(SessionManager.playerReadyPropertyKey, out var readyProperty))
             {
-                // minha escolha
-                if (NetworkManager.Singleton.LocalClient.IsSessionOwner)
-                    hostSelected = true;
-                else
-                    clientSelected = true;
+                everyoneReady = false;
+                break;
             }
-            else
+
+            if(readyProperty.Value != "True")
             {
-                // escolha do outro jogador
-                if (NetworkManager.Singleton.LocalClient.IsSessionOwner)
-                    clientSelected = true;
-                else
-                    hostSelected = true;
+                everyoneReady = false;
+                break;
             }
         }
 
-        startGameButton.interactable = hostSelected && clientSelected;
+        startGameButton.interactable = everyoneReady;
     }
 
     private void InitializePlayerNames()
@@ -305,11 +293,19 @@ public class CharacterManager : MonoBehaviour
 
     private void OnStartGameClicked()
     {
+        Debug.Log("START CLICADO");
+
         bool isSessionOwner = NetworkManager.Singleton.LocalClient != null && NetworkManager.Singleton.LocalClient.IsSessionOwner;
+
+        Debug.Log($"IsSessionOwner: {isSessionOwner}");
+        Debug.Log($"ConnectedClients: {NetworkManager.Singleton.ConnectedClientsIds.Count}");
 
         if (isSessionOwner && NetworkManager.Singleton.ConnectedClientsIds.Count == 2)
         {
             startGameButton.interactable = false;
+
+            Debug.Log("CARREGANDO CENA");
+
             NetworkManager.Singleton.SceneManager.LoadScene(gameSceneName, UnityEngine.SceneManagement.LoadSceneMode.Single);
         }
     }
