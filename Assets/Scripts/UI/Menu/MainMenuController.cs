@@ -5,6 +5,6 @@ public class MainMenuController : MonoBehaviour
 {
     public void GoToLobby()
     {
-        SceneManager.LoadScene("LobbyMultiplayer");
+        SceneManager.LoadScene("SaveAndLobbyMultiplayer");
     }
 }

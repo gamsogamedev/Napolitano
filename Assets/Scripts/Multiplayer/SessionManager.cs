@@ -25,11 +25,18 @@ public class SessionManager : Singleton<SessionManager>
         }
     }
 
+    public PlayerProfile CurrentProfile { get; private set; }
+
+    public void SetCurrentProfile(PlayerProfile profile)
+    {
+        CurrentProfile = profile;
+    }
+
     public string CurrentSessionCode => ActiveSession?.Code; 
 
     const string playerNamePropertyKey = "playerName";
     public const string playerSkinPropertyKey = "playerSkin";
-    const string playerMaxLevelPropertyKey = "playerMaxLevel";
+    public const string playerMaxLevelPropertyKey = "playerMaxLevel";
     public const string playerReadyPropertyKey = "playerReady";
 
     public string LocalPlayerName {  get; private set; }
@@ -51,12 +58,13 @@ public class SessionManager : Singleton<SessionManager>
         }
     }
 
-    public async UniTask UpdatePlayerData(string playerName, PlayerSprite sprite)
+    public async UniTask UpdatePlayerData(PlayerProfile profile)
     {
-        LocalPlayerName = playerName;
-        LocalPlayerSprite = sprite;
+        CurrentProfile = profile;
+        LocalPlayerName = profile.playerName;
+        LocalPlayerSprite = profile.playerSprite;
 
-        var properties = await GetPlayerPropertiesAsyncWithName(playerName, sprite);
+        var properties = await GetPlayerPropertiesAsyncWithName(profile);
 
         ActiveSession.CurrentPlayer.SetProperties(properties);
 
@@ -71,8 +79,13 @@ public class SessionManager : Singleton<SessionManager>
         
         PlayerSprite playerSprite = characterIndex == 0 ? PlayerSprite.Strawberry : PlayerSprite.Vanilla;
 
-        //atualiza variaável local
+        //atualiza variável local e salva remotamente
         LocalPlayerSprite = playerSprite;
+        if(CurrentProfile != null)
+        {
+            CurrentProfile.playerSprite = playerSprite;
+            PlayerProfileDatabase.SaveProfile(CurrentProfile);
+        }
 
         var property = new PlayerProperty(playerSprite.ToString(),VisibilityPropertyOptions.Member);
 
@@ -92,11 +105,30 @@ public class SessionManager : Singleton<SessionManager>
         await ActiveSession.SaveCurrentPlayerDataAsync();
     }
 
-    async UniTask<Dictionary<string, PlayerProperty>> GetPlayerPropertiesAsyncWithName(string playerName, PlayerSprite playerSprite)
+    public async UniTask UpdateMaxLevel(int newLevel)
+    {
+        if (CurrentProfile == null)
+            return;
+
+        if (newLevel <= CurrentProfile.maxLevel)
+            return;
+
+        CurrentProfile.maxLevel = newLevel;
+        PlayerProfileDatabase.SaveProfile(CurrentProfile);
+
+        var property = new PlayerProperty(newLevel.ToString(), VisibilityPropertyOptions.Member);
+
+        ActiveSession.CurrentPlayer.SetProperty(playerMaxLevelPropertyKey, property);
+
+        await ActiveSession.SaveCurrentPlayerDataAsync();
+    }
+
+    async UniTask<Dictionary<string, PlayerProperty>> GetPlayerPropertiesAsyncWithName(PlayerProfile profile)
     {
         
-        var playerNameProperty = new PlayerProperty(playerName, VisibilityPropertyOptions.Member);
-        var playerSkinProperty = new PlayerProperty(playerSprite.ToString(), VisibilityPropertyOptions.Member);
+        var playerNameProperty = new PlayerProperty(profile.playerName, VisibilityPropertyOptions.Member);
+        var playerSkinProperty = new PlayerProperty(profile.playerSprite.ToString(), VisibilityPropertyOptions.Member);
+        var playerMaxLevelProperty = new PlayerProperty(profile.maxLevel.ToString(), VisibilityPropertyOptions.Member);
         var playerReadyProperty = new PlayerProperty("false", VisibilityPropertyOptions.Member);
         await UniTask.CompletedTask;
         
@@ -104,6 +136,7 @@ public class SessionManager : Singleton<SessionManager>
         {
             {playerNamePropertyKey, playerNameProperty},
             {playerSkinPropertyKey, playerSkinProperty},
+            {playerMaxLevelPropertyKey, playerMaxLevelProperty},
             {playerReadyPropertyKey, playerReadyProperty}
         };
     }
@@ -118,13 +151,15 @@ public class SessionManager : Singleton<SessionManager>
         return LocalPlayerSprite;
     }
 
-    public async UniTask CreateSessionAsHost(string playerName, PlayerSprite sprite) 
+    public async UniTask CreateSessionAsHost(PlayerProfile profile) 
     {
         try 
         {
-            var playerProperties = await GetPlayerPropertiesAsyncWithName(playerName, sprite);
-            LocalPlayerName = playerName;
-            LocalPlayerSprite = sprite;
+            CurrentProfile = profile;
+
+            var playerProperties = await GetPlayerPropertiesAsyncWithName(profile);
+            LocalPlayerName = profile.playerName;
+            LocalPlayerSprite = profile.playerSprite;
             
             var options = new SessionOptions()
             {
@@ -143,13 +178,15 @@ public class SessionManager : Singleton<SessionManager>
         }
     }
 
-    public async UniTask JoinSessionByCode(string code, string playerName, PlayerSprite sprite) 
+    public async UniTask JoinSessionByCode(string code, PlayerProfile profile) 
     {
         try 
         {
-            var playerProperties = await GetPlayerPropertiesAsyncWithName(playerName, sprite);
-            LocalPlayerName = playerName;
-            LocalPlayerSprite = sprite;
+            CurrentProfile = profile;
+
+            var playerProperties = await GetPlayerPropertiesAsyncWithName(profile);
+            LocalPlayerName = profile.playerName;
+            LocalPlayerSprite = profile.playerSprite;
 
             var joinOptions = new JoinSessionOptions()
             {

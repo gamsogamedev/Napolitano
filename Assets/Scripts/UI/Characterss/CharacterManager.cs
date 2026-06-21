@@ -44,7 +44,12 @@ public class CharacterManager : MonoBehaviour
         {
             startGameButton.onClick.RemoveListener(OnStartGameClicked);
 
-            UnregisterEvents();
+        if (SessionManager.Instance.ActiveSession != null)
+        {
+            SessionManager.Instance.ActiveSession.PlayerPropertiesChanged -= OnPlayerPropertiesChanged;
+        }
+
+        UnregisterEvents();
         }
 
         private void RegisterEvents()
@@ -74,11 +79,11 @@ public class CharacterManager : MonoBehaviour
     private void OnPlayerPropertiesChanged()
     {
         Debug.Log("Trocou propriedade");
-        LoadRemotePlayerSelection();
+        LoadOtherPlayerSelection();
         CheckStartButton();
     }
     
-    private void LoadRemotePlayerSelection()
+    private void LoadOtherPlayerSelection()
     {
         if (SessionManager.Instance.ActiveSession == null)
             return;
@@ -112,6 +117,7 @@ public class CharacterManager : MonoBehaviour
             }
         }
     }
+
 
     #region ButtonBehaviour
 
@@ -214,7 +220,31 @@ public class CharacterManager : MonoBehaviour
 
         ConfigureLocalPermissions();
 
-        LoadRemotePlayerSelection();
+        LoadInitialLocalPlayer();
+        LoadOtherPlayerSelection();
+    }
+
+    private void LoadInitialLocalPlayer()
+    {
+        var player = SessionManager.Instance.ActiveSession.CurrentPlayer;
+
+        if(player.Properties.TryGetValue(SessionManager.playerSkinPropertyKey, out var property))
+        {
+            int index = property.Value == nameof(PlayerSprite.Strawberry) ? 0 : 1;
+
+            Character character = dataBase.GetCharacter(index);
+
+            if (NetworkManager.Singleton.LocalClient.IsSessionOwner)
+            {
+                sessionOwnerPrevIndex = index;
+                sessionOwnerPanel.SetCharacter(character);
+            }
+            else
+            {
+                clientPrevIndex = index;
+                clientPanel.SetCharacter(character);
+            }
+        }
     }
 
     private void CheckStartButton()
