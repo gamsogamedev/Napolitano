@@ -4,6 +4,7 @@ using UnityEditor.Rendering.LookDev;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UI;
 
 public class MenuSaveController : MonoBehaviour
 {
@@ -14,8 +15,8 @@ public class MenuSaveController : MonoBehaviour
     [SerializeField] private TMP_InputField playerNameInput;
 
     [Header("Buttons")]
-    [SerializeField] private Button newPlayerButton;
-    [SerializeField] private Button oldPlayerButton;
+    [SerializeField] private CustomButton newPlayerButton;
+    [SerializeField] private CustomButton oldPlayerButton;
 
     [Header("Status text")]
     [SerializeField] private TextMeshProUGUI statusText;
@@ -27,14 +28,14 @@ public class MenuSaveController : MonoBehaviour
 
     private void OnEnable()
     {
-        newPlayerButton.onClick.AddListener(OnNewPlayerClicked);
-        oldPlayerButton.onClick.AddListener(OnOldPlayerClicked);
+        newPlayerButton.OnClicked += OnNewPlayerClicked;
+        oldPlayerButton.OnClicked += OnOldPlayerClicked;
     }
 
     private void OnDisable()
     {
-        newPlayerButton.onClick.RemoveListener(OnNewPlayerClicked);
-        oldPlayerButton.onClick.RemoveListener(OnOldPlayerClicked);
+        newPlayerButton.OnClicked -= OnNewPlayerClicked;
+        oldPlayerButton.OnClicked -= OnOldPlayerClicked;
     }
 
     private void OnNewPlayerClicked()
