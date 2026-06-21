@@ -79,7 +79,6 @@ public class SessionManager : Singleton<SessionManager>
         
         PlayerSprite playerSprite = characterIndex == 0 ? PlayerSprite.Strawberry : PlayerSprite.Vanilla;
 
-        //atualiza variável local e salva remotamente
         LocalPlayerSprite = playerSprite;
         if(CurrentProfile != null)
         {
