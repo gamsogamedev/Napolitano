@@ -9,6 +9,7 @@ public class IceCreamTimerUI : NetworkBehaviour {
     [SerializeField] private Image timerImage;
 
     private CancellationTokenSource cts;
+    private bool isPaused;
 
     private void Awake() {
         HideLocal();
@@ -57,6 +58,11 @@ public class IceCreamTimerUI : NetworkBehaviour {
 
         try {
             while (elapsed < duration) {
+                if (isPaused) {
+                    await UniTask.Yield(PlayerLoopTiming.Update, token);
+                    continue;
+                }
+
                 elapsed += Time.deltaTime;
 
                 float remaining = 1f - Mathf.Clamp01(elapsed / duration);
@@ -71,7 +77,7 @@ public class IceCreamTimerUI : NetworkBehaviour {
         }
     }
 
-    private void HideLocal() {
+    public void HideLocal() {
         CancelLocalTimer();
 
         if (timerImage != null) {
@@ -90,5 +96,12 @@ public class IceCreamTimerUI : NetworkBehaviour {
 
     private void OnDestroy() {
         CancelLocalTimer();
+    }
+    public void Pause() {
+        isPaused = true;
+    }
+
+    public void Resume() {
+        isPaused = false;
     }
 }

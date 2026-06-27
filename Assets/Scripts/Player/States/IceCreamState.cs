@@ -6,49 +6,18 @@ namespace Player.States
     {
         private readonly float _speed;
 
-        private float timer;
-        private bool hasMelted;
-        private float time_to_melt = 5f;
-        private IceCreamTimerUI timerUI; 
-
-
         public IceCreamState(float speed)
         {
             _speed = speed;
         }
 
         public void EnterState(PlayerController player) {
-            timer = 0f;
-            hasMelted = false;
 
-            timerUI = player.GetComponentInChildren<IceCreamTimerUI>();
-
-            if (timerUI == null) {
-                Debug.LogError("IceCreamTimerUI NÃO encontrado no root do Player!");
-                return;
-            }
-
-            Debug.Log("IceCreamTimerUI encontrado. Chamando StartNetworkTimer.");
-
-            timerUI.StartNetworkTimer(5f);
+            player.GetComponent<IceCreamMeltTimer>()?.StartTimer();
         }
 
         public void Execute(PlayerController player)
         {
-
-            timer += Time.deltaTime;
-
-            if (!hasMelted && timer >= time_to_melt) {
-                hasMelted = true;
-
-                PlayerCollision playerCollision = player.GetComponent<PlayerCollision>();
-
-                if (playerCollision != null) {
-                    playerCollision.IceCream_Melted();
-                }
-
-                return;
-            }
 
             if (player.JumpInputThisFrame && player.IsGrounded())
             {
@@ -62,13 +31,7 @@ namespace Player.States
 
         public void ExitState(PlayerController player)
         {
-            timer = 0f;
-            hasMelted = false;
-
-            if (timerUI != null) {
-                timerUI.StopNetworkTimer();
-                timerUI = null;
-            }
+            player.GetComponent<IceCreamMeltTimer>()?.StopTimer();
         }
 
         public void HandleMovement(PlayerController player)

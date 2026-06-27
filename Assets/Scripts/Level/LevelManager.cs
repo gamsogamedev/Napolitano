@@ -1,3 +1,4 @@
+using Player;
 using System;
 using System.Collections.Generic;
 using TMPro;
@@ -47,6 +48,9 @@ public class LevelManager : NetworkBehaviour
 
     private void TriggerLevelComplete()
     {
+        foreach (var player in PlayerController.AllPlayers.Values) {
+            player.GetComponent<PlayerActions>()?.DisablePlayer(true);
+        }
 
         if (NetworkManager.Singleton.LocalClient.IsSessionOwner)
         {
@@ -73,6 +77,10 @@ public class LevelManager : NetworkBehaviour
 
     private void TriggerLeveFail(string playerName)
     {
+        foreach (var player in PlayerController.AllPlayers.Values) {
+            player.GetComponent<PlayerActions>()?.DisablePlayer(false);
+        }
+
         string customMessage = "Jogador " + playerName + " morreu!";
 
         if (NetworkManager.Singleton.LocalClient.IsSessionOwner)
@@ -96,6 +104,15 @@ public class LevelManager : NetworkBehaviour
                     message = customMessage + " Esperando o host...",
                 }
             );
+        }
+    }
+
+    private void DisableAllPlayers() {
+        foreach (var player in PlayerController.AllPlayers.Values) {
+            var actions = player.GetComponent<PlayerActions>();
+
+            if (actions != null)
+                actions.DisableGameplay();
         }
     }
 }
