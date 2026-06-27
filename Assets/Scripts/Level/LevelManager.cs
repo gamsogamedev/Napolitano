@@ -54,8 +54,10 @@ public class LevelManager : NetworkBehaviour
             {
                 title = "Level " +  levelNumber + " Concluído!",
                 confirmText = "Voltar para seleção de mapa",
-                onConfirm = () =>
+                onConfirm = async () =>
                 {
+                    await SessionManager.Instance.UpdateMaxLevel(levelNumber + 1);
+
                     NetworkManager.Singleton.SceneManager.LoadScene("LevelSelector", LoadSceneMode.Single);
                 }
             });

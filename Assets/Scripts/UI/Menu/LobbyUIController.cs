@@ -4,62 +4,57 @@ using UnityEngine.UI;
 using TMPro; 
 using Cysharp.Threading.Tasks;
 using Player;
-using Unity.Netcode; 
+using Unity.Netcode;
+using Unity.Loading;
+using UI;
 
 public class LobbyUIController : MonoBehaviour
 {
     [Header("UI Elements")]
     [SerializeField] private TextMeshProUGUI statusLabel;
-    [SerializeField] private Button exitGameButton;
+    [SerializeField] private CustomButton exitGameButton;
     [SerializeField] private TMP_InputField roomCodeInput;
 
     [Header("Host Buttons")]
-    [SerializeField] private Button createSessionButton;
-    [SerializeField] private Button startGameButton;
+    [SerializeField] private CustomButton createSessionButton;
     
     [Header("Client Buttons")]
     [SerializeField] private TMP_InputField joinCodeInput;
-    [SerializeField] private Button joinSessionButton;
-    
-    [Header("Player Data")]
-    [SerializeField] private TMP_InputField playerNameInput;
-    
+    [SerializeField] private CustomButton joinSessionButton;
+
     [Header("Nome da sua cena")]
-    [SerializeField] private string gameSceneName = "GameScene";
-    
-    private PlayerSprite playerSprite = PlayerSprite.Strawberry;
-    
+    [SerializeField] private string gameSceneName;
+
+    private bool sceneLoading;
+
     private NetworkManager networkManager;
 
     private void OnEnable()
     {
-        createSessionButton.onClick.AddListener(OnCreateSessionClicked);
-        joinSessionButton.onClick.AddListener(OnJoinSessionClicked);
-        startGameButton.onClick.AddListener(OnStartGameClicked);
-        exitGameButton.onClick.AddListener(OnExitGameClicked);
+        createSessionButton.OnClicked += OnCreateSessionClicked;
+        joinSessionButton.OnClicked += OnJoinSessionClicked;
+        exitGameButton.OnClicked += OnExitGameClicked;
     }
 
     private void OnDisable()
     {
-        createSessionButton.onClick.RemoveListener(OnCreateSessionClicked);
-        joinSessionButton.onClick.RemoveListener(OnJoinSessionClicked);
-        startGameButton.onClick.RemoveListener(OnStartGameClicked);
-        exitGameButton.onClick.RemoveListener(OnExitGameClicked);
+        createSessionButton.OnClicked -= OnCreateSessionClicked;
+        joinSessionButton.OnClicked -= OnJoinSessionClicked;
+        exitGameButton.OnClicked -= OnExitGameClicked;
 
         UnsubscribeNetworkEvents();
     }
 
     private void Start()
     {
-        startGameButton.gameObject.SetActive(false);
         roomCodeInput.gameObject.SetActive(false);
         networkManager = NetworkManager.Singleton;
     }
     
     private void SetUIInteractable(bool isEnabled)
     {
-        createSessionButton.interactable = isEnabled;
-        joinSessionButton.interactable = isEnabled;
+        createSessionButton.Interactable = isEnabled;
+        joinSessionButton.Interactable = isEnabled;
         joinCodeInput.interactable = isEnabled;
     }
 
@@ -67,18 +62,17 @@ public class LobbyUIController : MonoBehaviour
 
         private async void OnCreateSessionClicked()
         {
-
-            var playerName = playerNameInput.text.Trim();
-            if (string.IsNullOrEmpty(playerName))
+            PlayerProfile profile = SessionManager.Instance.CurrentProfile;
+            if(profile == null)
             {
-                statusLabel.text = "Escreva o seu nome para criar uma sala";
+                statusLabel.text = "Nenhum perfil carregado";
                 return;
             }
             
             statusLabel.text = "Criando sessão...";
             SetUIInteractable(false);
 
-            await SessionManager.Instance.CreateSessionAsHost(playerNameInput.text.Trim(), playerSprite);
+            await SessionManager.Instance.CreateSessionAsHost(profile);
 
             if (SessionManager.Instance.ActiveSession != null)
             {
@@ -101,18 +95,18 @@ public class LobbyUIController : MonoBehaviour
                 statusLabel.text = "Codigo invalido";
                 return;
             }
-            
-            var playerName = playerNameInput.text.Trim();
-            if (string.IsNullOrEmpty(playerName))
+
+            PlayerProfile profile = SessionManager.Instance.CurrentProfile;
+            if (profile == null)
             {
-                statusLabel.text = "Escreva o seu nome para criar uma sala";
+                statusLabel.text = "Nenhum perfil carregado";
                 return;
             }
 
             statusLabel.text = "Joining Session...";
             SetUIInteractable(false);
 
-            await SessionManager.Instance.JoinSessionByCode(code, playerName, playerSprite);
+            await SessionManager.Instance.JoinSessionByCode(code, profile);
 
             if (SessionManager.Instance.ActiveSession != null)
             {
@@ -124,17 +118,6 @@ public class LobbyUIController : MonoBehaviour
             {
                 statusLabel.text = "Falha ao conectar. Tente novamente.";
                 SetUIInteractable(true);
-            }
-        }
-        
-        private void OnStartGameClicked()
-        {
-            bool isSessionOwner = networkManager.LocalClient != null && networkManager.LocalClient.IsSessionOwner;
-
-            if (isSessionOwner && networkManager.ConnectedClientsIds.Count == 2)
-            {
-                startGameButton.interactable = false;
-                networkManager.SceneManager.LoadScene(gameSceneName, UnityEngine.SceneManagement.LoadSceneMode.Single);
             }
         }
 
@@ -151,17 +134,16 @@ public class LobbyUIController : MonoBehaviour
             }
         }
 
-        public void OnSkinDrowdownChanged(Int32 index)
-        {
-            switch (index)
-            {
-                case 0: playerSprite = PlayerSprite.Strawberry; break;
-                case 1: playerSprite = PlayerSprite.Vanilla; break;
-                case 2: playerSprite = PlayerSprite.Chocolate; break;
-            }
-        }
-
     #endregion
+
+    private void LoadGameScene()
+    {
+        if (sceneLoading) return;
+
+        sceneLoading = true;
+
+        NetworkManager.Singleton.SceneManager.LoadScene(gameSceneName, UnityEngine.SceneManagement.LoadSceneMode.Single);
+    }
     
     #region Network Events
     
@@ -195,27 +177,22 @@ public class LobbyUIController : MonoBehaviour
 
             if (isSessionOwner)
             {
-                startGameButton.gameObject.SetActive(true);
 
                 int currentPlayerCount = networkManager.ConnectedClientsIds.Count;
-
-                startGameButton.interactable = (currentPlayerCount == 2);
 
                 if (currentPlayerCount == 2)
                 {
                     statusLabel.text = "Player 2 conectado";
                     roomCodeInput.gameObject.SetActive(false);
-            }
+
+                    LoadGameScene();
+                }
                 else
                 {
                     statusLabel.text = "Code: ";
                     roomCodeInput.text = SessionManager.Instance.CurrentSessionCode;
                     roomCodeInput.gameObject.SetActive(true);
                 }
-            }
-            else
-            {
-                startGameButton.gameObject.SetActive(false);
             }
         }
 
