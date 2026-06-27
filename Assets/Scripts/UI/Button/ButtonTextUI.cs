@@ -18,7 +18,6 @@ namespace UI
         {
             customButton.OnHoverEnter += OnHoverEnter;
             customButton.OnHoverExit += OnHoverExit;
-            customButton.onClickEvent.AddListener(OnHoverExit);
         }
 
         private void OnDisable()
