@@ -15,6 +15,12 @@ public class PlayerCollision : NetworkBehaviour
             BroadcastDamageRpc(SessionManager.Instance.ActiveSession.CurrentPlayer.Properties["playerName"].Value);
         }
     }
+
+    public void IceCream_Melted () {
+        if (!IsOwner) return;
+
+        BroadcastDamageRpc(SessionManager.Instance.ActiveSession.CurrentPlayer.Properties["playerName"].Value);
+    }
     
     [Rpc(SendTo.Everyone)]
     private void BroadcastDamageRpc(string playerName)

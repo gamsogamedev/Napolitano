@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace Player.States
 {
     public class IceCreamState : IPlayerState
@@ -9,12 +11,14 @@ namespace Player.States
             _speed = speed;
         }
 
-        public void EnterState(PlayerController player)
-        {
+        public void EnterState(PlayerController player) {
+
+            player.GetComponent<IceCreamMeltTimer>()?.StartTimer();
         }
 
         public void Execute(PlayerController player)
         {
+
             if (player.JumpInputThisFrame && player.IsGrounded())
             {
                 var velocity = player.Rb.linearVelocity;
@@ -27,6 +31,7 @@ namespace Player.States
 
         public void ExitState(PlayerController player)
         {
+            player.GetComponent<IceCreamMeltTimer>()?.StopTimer();
         }
 
         public void HandleMovement(PlayerController player)

@@ -21,7 +21,8 @@ public class LevelWinCondition : NetworkBehaviour, IInteractable
         //TODO: adicionar um "DisableController: para o interactor
         //Isso disabilitaria o controle do jogador e removeria o player da cena, dps a gente faz um trigger pra rodar
         //uma animação na condição de vitoria do personagem entrando no cone de sorvete
-        
+        interactor.DisableController(true);
+
         SubmitWinInteractionRPC(NetworkManager.Singleton.LocalClientId);
     }
 
@@ -29,7 +30,9 @@ public class LevelWinCondition : NetworkBehaviour, IInteractable
     private void SubmitWinInteractionRPC(ulong clientId)
     {
         playersWon.Add(clientId);
-        
+
+        DisableWinningPlayerRpc(clientId);
+
         if (playersWon.Count == NetworkManager.Singleton.ConnectedClientsIds.Count)
         {
             TriggerLevelCompleteRPC();
@@ -41,5 +44,11 @@ public class LevelWinCondition : NetworkBehaviour, IInteractable
     {
         OnLevelComplete?.Invoke();
     }
-    
+
+    [Rpc(SendTo.Everyone)]
+    private void DisableWinningPlayerRpc(ulong clientId) {
+        if (PlayerController.AllPlayers.TryGetValue(clientId, out var player)) {
+            player.DisableController(true);
+        }
+    }
 }
