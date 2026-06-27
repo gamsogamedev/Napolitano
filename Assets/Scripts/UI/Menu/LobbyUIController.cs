@@ -6,20 +6,21 @@ using Cysharp.Threading.Tasks;
 using Player;
 using Unity.Netcode;
 using Unity.Loading;
+using UI;
 
 public class LobbyUIController : MonoBehaviour
 {
     [Header("UI Elements")]
     [SerializeField] private TextMeshProUGUI statusLabel;
-    [SerializeField] private Button exitGameButton;
+    [SerializeField] private CustomButton exitGameButton;
     [SerializeField] private TMP_InputField roomCodeInput;
 
     [Header("Host Buttons")]
-    [SerializeField] private Button createSessionButton;
+    [SerializeField] private CustomButton createSessionButton;
     
     [Header("Client Buttons")]
     [SerializeField] private TMP_InputField joinCodeInput;
-    [SerializeField] private Button joinSessionButton;
+    [SerializeField] private CustomButton joinSessionButton;
 
     [Header("Nome da sua cena")]
     [SerializeField] private string gameSceneName;
@@ -30,16 +31,16 @@ public class LobbyUIController : MonoBehaviour
 
     private void OnEnable()
     {
-        createSessionButton.onClick.AddListener(OnCreateSessionClicked);
-        joinSessionButton.onClick.AddListener(OnJoinSessionClicked);
-        exitGameButton.onClick.AddListener(OnExitGameClicked);
+        createSessionButton.OnClicked += OnCreateSessionClicked;
+        joinSessionButton.OnClicked += OnJoinSessionClicked;
+        exitGameButton.OnClicked += OnExitGameClicked;
     }
 
     private void OnDisable()
     {
-        createSessionButton.onClick.RemoveListener(OnCreateSessionClicked);
-        joinSessionButton.onClick.RemoveListener(OnJoinSessionClicked);
-        exitGameButton.onClick.RemoveListener(OnExitGameClicked);
+        createSessionButton.OnClicked -= OnCreateSessionClicked;
+        joinSessionButton.OnClicked -= OnJoinSessionClicked;
+        exitGameButton.OnClicked -= OnExitGameClicked;
 
         UnsubscribeNetworkEvents();
     }
@@ -52,8 +53,8 @@ public class LobbyUIController : MonoBehaviour
     
     private void SetUIInteractable(bool isEnabled)
     {
-        createSessionButton.interactable = isEnabled;
-        joinSessionButton.interactable = isEnabled;
+        createSessionButton.Interactable = isEnabled;
+        joinSessionButton.Interactable = isEnabled;
         joinCodeInput.interactable = isEnabled;
     }
 
