@@ -6,7 +6,9 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class IceCreamTimerUI : NetworkBehaviour {
-    [SerializeField] private Image timerImage;
+
+    [SerializeField] private Image timerBar;
+    [SerializeField] private Image timerFill;
 
     private CancellationTokenSource cts;
     private bool isPaused;
@@ -51,8 +53,9 @@ public class IceCreamTimerUI : NetworkBehaviour {
     }
 
     private async UniTaskVoid RunTimer(float duration, CancellationToken token) {
-        timerImage.gameObject.SetActive(true);
-        timerImage.fillAmount = 1f;
+        timerBar.gameObject.SetActive(true);
+        timerFill.gameObject.SetActive(true);
+        timerFill.fillAmount = 1f;
 
         float elapsed = 0f;
 
@@ -66,12 +69,12 @@ public class IceCreamTimerUI : NetworkBehaviour {
                 elapsed += Time.deltaTime;
 
                 float remaining = 1f - Mathf.Clamp01(elapsed / duration);
-                timerImage.fillAmount = remaining;
+                timerFill.fillAmount = remaining;
 
                 await UniTask.Yield(PlayerLoopTiming.Update, token);
             }
 
-            timerImage.fillAmount = 0f;
+            timerFill.fillAmount = 0f;
         }
         catch (OperationCanceledException) {
         }
@@ -79,11 +82,10 @@ public class IceCreamTimerUI : NetworkBehaviour {
 
     public void HideLocal() {
         CancelLocalTimer();
-
-        if (timerImage != null) {
-            timerImage.gameObject.SetActive(false);
-            timerImage.fillAmount = 1f;
-        }
+        
+        timerBar.gameObject.SetActive(false);
+        timerFill.gameObject.SetActive(false);
+        timerFill.fillAmount = 1f;
     }
 
     private void CancelLocalTimer() {
@@ -94,7 +96,7 @@ public class IceCreamTimerUI : NetworkBehaviour {
         cts = null;
     }
 
-    private void OnDestroy() {
+    private new void OnDestroy() {
         CancelLocalTimer();
     }
     public void Pause() {
