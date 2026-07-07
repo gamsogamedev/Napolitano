@@ -333,5 +333,12 @@ namespace Player
             bodySpriteRenderer.enabled = visibility;
             playerNameField.enabled = visibility;
         }
+
+        public void DisableController(bool hidePlayer) {
+            GetComponent<PlayerActions>()?.DisablePlayer(hidePlayer);
+            // Futuramente:
+            // Animator.SetTrigger("Win");
+
+        }
     }
 }
