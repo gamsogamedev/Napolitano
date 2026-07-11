@@ -69,7 +69,7 @@ public class LobbyUIController : MonoBehaviour
                 return;
             }
             
-            statusLabel.text = "Criando sessão...";
+            statusLabel.text = "Criando sala...";
             SetUIInteractable(false);
 
             await SessionManager.Instance.CreateSessionAsHost(profile);
@@ -82,7 +82,7 @@ public class LobbyUIController : MonoBehaviour
             }
             else
             {
-                statusLabel.text = "Falha ao criar sessão";
+                statusLabel.text = "Falha ao criar sala";
                 SetUIInteractable(true);
             }
         }

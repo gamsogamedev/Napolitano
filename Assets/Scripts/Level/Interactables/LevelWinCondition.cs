@@ -1,11 +1,18 @@
 using System;
 using System.Collections.Generic;
+using Microsoft.Unity.VisualStudio.Editor;
 using Player;
 using Unity.Netcode;
 using UnityEngine;
 
 public class LevelWinCondition : NetworkBehaviour, IInteractable
 {
+
+    [SerializeField] private SpriteRenderer finishLine;
+    
+    [SerializeField] private Sprite completedSprite;
+    
+    
     
     private HashSet<ulong> playersWon = new HashSet<ulong>();
     
@@ -18,10 +25,9 @@ public class LevelWinCondition : NetworkBehaviour, IInteractable
 
     public void Interact(PlayerController interactor)
     {
-        //TODO: adicionar um "DisableController: para o interactor
-        //Isso disabilitaria o controle do jogador e removeria o player da cena, dps a gente faz um trigger pra rodar
-        //uma animação na condição de vitoria do personagem entrando no cone de sorvete
         interactor.DisableController(true);
+        
+        finishLine.sprite = completedSprite;
 
         SubmitWinInteractionRPC(NetworkManager.Singleton.LocalClientId);
     }

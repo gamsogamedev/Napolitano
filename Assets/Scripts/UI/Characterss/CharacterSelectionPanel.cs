@@ -1,5 +1,6 @@
 using System;
 using TMPro;
+using UI;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,9 +14,9 @@ public class CharacterSelectionPanel : MonoBehaviour
     [SerializeField] private Image characterImage;
 
     [Header("Buttons")]
-    [SerializeField] private Button nextButton;
-    [SerializeField] private Button prevButton;
-    [SerializeField] private Button selectButton;
+    [SerializeField] private CustomButton nextButton;
+    [SerializeField] private CustomButton prevButton;
+    [SerializeField] private CustomButton selectButton;
 
 
     //Eventos
@@ -23,33 +24,17 @@ public class CharacterSelectionPanel : MonoBehaviour
     public event Action OnNextPressed;
     public event Action OnSelectPressed;
 
-
-
-    private void OnEnable()
-    {
-        prevButton.onClick.AddListener(OnPreviousClicked);
-        nextButton.onClick.AddListener(OnNextClicked);
-        selectButton.onClick.AddListener(OnSelectClicked);
-    }
-
-    private void OnDisable()
-    {
-        prevButton.onClick.RemoveListener(OnPreviousClicked);
-        nextButton.onClick.RemoveListener(OnNextClicked);
-        selectButton.onClick.RemoveListener(OnSelectClicked);
-    }
-
-    private void OnPreviousClicked()
+    public void OnPreviousClicked()
     {
         OnPreviusPressed?.Invoke();
     }
 
-    private void OnNextClicked()
+    public void OnNextClicked()
     {
         OnNextPressed?.Invoke();
     }
 
-    private void OnSelectClicked()
+    public void OnSelectClicked()
     {
         OnSelectPressed?.Invoke();
     }
@@ -67,8 +52,8 @@ public class CharacterSelectionPanel : MonoBehaviour
 
     public void SetInteractable(bool interactable)
     {
-        prevButton.interactable = interactable;
-        nextButton.interactable = interactable;
-        selectButton.interactable = interactable;
+        prevButton.Interactable = interactable;
+        nextButton.Interactable = interactable;
+        selectButton.Interactable = interactable;
     }
 }
