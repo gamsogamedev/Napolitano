@@ -1,4 +1,5 @@
 using TMPro;
+using UI;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -7,9 +8,9 @@ using UnityEngine.UI;
 public class LevelSelectorUIController : MonoBehaviour
 {
     [Header("Level Buttons")]
-    [SerializeField] private Button[] levelButtons;
+    [SerializeField] private CustomButton[] levelButtons;
 
-    [SerializeField] private TextMeshProUGUI statusLabel;
+    [SerializeField] private GameObject statusLabel;
 
     private void Start()
     {
@@ -19,22 +20,17 @@ public class LevelSelectorUIController : MonoBehaviour
 
     private void ConfigureStatusLabel()
     {
-        bool isSessionOwner = NetworkManager.Singleton.LocalClient.IsSessionOwner;
-
-        if (!isSessionOwner)
-        {
-            statusLabel.text = "Aguardando dono da sessão escolher uma fase...";
-        }
+        statusLabel.SetActive(!NetworkManager.Singleton.LocalClient.IsSessionOwner);
     }
 
     private void ConfigureLevelButtons()
     {
+        if (!NetworkManager.Singleton.LocalClient.IsSessionOwner) return;
         int maxLevel = GetMaxLevel();
 
         for(int i = 0; i < levelButtons.Length; i++)
         {
-            bool unlocked = i <= maxLevel;
-            levelButtons[i].interactable = unlocked;
+            levelButtons[i].Interactable = i <= maxLevel;
         }
     }
 

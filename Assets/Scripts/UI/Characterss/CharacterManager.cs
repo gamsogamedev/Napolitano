@@ -1,4 +1,5 @@
 using Player;
+using UI;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,7 +14,7 @@ public class CharacterManager : MonoBehaviour
     [SerializeField] CharacterSelectionPanel clientPanel;
 
     [Header("Buttons")]
-    [SerializeField] private Button startGameButton;
+    [SerializeField] private CustomButton startGameButton;
 
     [Header("Next scene")]
     [SerializeField] private string gameSceneName;
@@ -35,15 +36,11 @@ public class CharacterManager : MonoBehaviour
         {
             RegisterEvents();
                 
-            startGameButton.onClick.AddListener(OnStartGameClicked);
-                
             InitializeUI();
         }
 
         private void OnDisable()
         {
-            startGameButton.onClick.RemoveListener(OnStartGameClicked);
-
         if (SessionManager.Instance.ActiveSession != null)
         {
             SessionManager.Instance.ActiveSession.PlayerPropertiesChanged -= OnPlayerPropertiesChanged;
@@ -269,7 +266,7 @@ public class CharacterManager : MonoBehaviour
             }
         }
 
-        startGameButton.interactable = everyoneReady;
+        startGameButton.Interactable = everyoneReady;
     }
 
     private void InitializePlayerNames()
@@ -318,16 +315,16 @@ public class CharacterManager : MonoBehaviour
         clientPanel.SetInteractable(!isSessionOwner);
 
         startGameButton.gameObject.SetActive(isSessionOwner);
-        startGameButton.interactable = false;
+        startGameButton.Interactable = false;
     }
 
-    private void OnStartGameClicked()
+    public void OnStartGameClicked()
     {
         bool isSessionOwner = NetworkManager.Singleton.LocalClient != null && NetworkManager.Singleton.LocalClient.IsSessionOwner;
 
         if (isSessionOwner && NetworkManager.Singleton.ConnectedClientsIds.Count == 2)
         {
-            startGameButton.interactable = false;
+            startGameButton.Interactable = false;
 
             NetworkManager.Singleton.SceneManager.LoadScene(gameSceneName, UnityEngine.SceneManagement.LoadSceneMode.Single);
         }

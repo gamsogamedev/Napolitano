@@ -1,13 +1,10 @@
 fileFormatVersion: 2
-guid: adf2c94e6b903b5d7ae8e0634bb5a9e1
+guid: d978b2bd2bf10522ab5a0f7116cec207
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -8424044941456777973
-    second: PauseOptions_0
-  - first:
-      213: -1812268355382517023
-    second: PauseOptions_1
+      213: 8648361372524861585
+    second: Embalagem_Chocolate_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -40,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 0
+    filterMode: 1
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -51,7 +48,7 @@ TextureImporter:
   compressionQuality: 50
   spriteMode: 2
   spriteExtrude: 1
-  spriteMeshType: 0
+  spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 100
@@ -78,7 +75,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -116,35 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Options_Unclicked
+      name: Embalagem_Chocolate_0
       rect:
         serializedVersion: 2
-        x: 2
-        y: 2
-        width: 22
-        height: 24
-      alignment: 9
-      pivot: {x: 0.5, y: 0.53846157}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: b0dda8c12c7c71b80800000000000000
-      internalID: -8424044941456777973
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Options_Clicked
-      rect:
-        serializedVersion: 2
-        x: 34
-        y: 1
-        width: 22
-        height: 24
+        x: 0
+        y: 0
+        width: 1580
+        height: 433
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -153,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 1e26eb7588789d6e0800000000000000
-      internalID: -1812268355382517023
+      spriteID: 198dd8ae8d6250870800000000000000
+      internalID: 8648361372524861585
       vertices: []
       indices: 
       edges: []
@@ -163,7 +138,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 1e22311e911cf978d8ceed51b50389bc
+    spriteID: afafe02f7c43f00f1b080bde5f8fc2d9
     internalID: 0
     vertices: []
     indices: 
@@ -173,8 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Options_Clicked: -1812268355382517023
-      Options_Unclicked: -8424044941456777973
+      Embalagem_Chocolate_0: 8648361372524861585
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
