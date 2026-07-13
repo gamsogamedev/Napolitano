@@ -45,6 +45,10 @@ public class CameraController : MonoBehaviour
     private float _currentSize;
     private float _zoomVelocity;
 
+    // --- Diagnóstico temporário (pode remover depois) ---
+    private int _playerCount;
+    private int _lastLoggedCount = -1;
+
     private void Awake()
     {
         _camera = GetComponent<Camera>();
@@ -58,6 +62,11 @@ public class CameraController : MonoBehaviour
 
         _currentSize = _baseSize;
         if (maxOrthographicSize < _baseSize) maxOrthographicSize = _baseSize;
+
+        // --- Diagnóstico temporário ---
+        Debug.Log($"[CameraController] ATIVO em '{gameObject.name}'. " +
+                  $"baseSize={_baseSize}, baseBottom={_baseBottom}, max={maxOrthographicSize}, " +
+                  $"orthographic={_camera.orthographic}");
     }
 
     private void LateUpdate()
@@ -69,6 +78,14 @@ public class CameraController : MonoBehaviour
             : targetSize;
 
         ApplyPose(_currentSize);
+
+        // --- Diagnóstico temporário: loga quando o nº de jogadores detectados muda ---
+        if (_playerCount != _lastLoggedCount)
+        {
+            _lastLoggedCount = _playerCount;
+            Debug.Log($"[CameraController] jogadores detectados={_playerCount}, " +
+                      $"tamanho alvo={targetSize:0.00}, atual={_currentSize:0.00}");
+        }
     }
 
     /// <summary>
@@ -80,12 +97,14 @@ public class CameraController : MonoBehaviour
         float required = _baseSize;
         float aspect = Mathf.Max(_camera.aspect, 0.0001f); // largura / altura
 
+        _playerCount = 0;
         foreach (var kvp in PlayerController.AllPlayers)
         {
             var player = kvp.Value;
             if (player == null) continue;
             if (player.NetworkedStateType == PlayerController.PlayerStateType.Spoon) continue;
 
+            _playerCount++;
             Vector3 p = player.transform.position;
 
             // Horizontal: meiaLargura = size * aspect >= |x - baseX| + folga
