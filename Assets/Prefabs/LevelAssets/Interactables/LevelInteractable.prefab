@@ -165,4 +165,6 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   canConeInteract: 0
   canIceCreamInteract: 0
+  canRotate: 1
+  rotationSpeed: 60
   targetItem: {fileID: 0}

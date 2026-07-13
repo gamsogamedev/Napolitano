@@ -21,7 +21,7 @@ namespace UI
         [Header("Interactable")]
         [Space(10)]
         [SerializeField] private bool interactable = true;
-    
+
         private Image image;
         private bool isHovering = false;
     
@@ -30,23 +30,19 @@ namespace UI
         public event Action OnStartClick;
         public event Action OnClicked;
 
+        private void Start()
+        {
+            image =  GetComponent<Image>();
+        }
+        
         public bool Interactable
         {
             get => interactable;
             set
             {
-                if ((interactable == value)) return;
-
                 interactable = value;
                 UpdateVisual();
             }
-        }
-    
-        private void Awake()
-        {
-            image = GetComponent<Image>();
-            if(idleSprite == null) idleSprite = image.sprite;
-            UpdateVisual();
         }
     
         public void OnPointerEnter(PointerEventData eventData)
@@ -105,7 +101,7 @@ namespace UI
         {
             image.sprite = idleSprite;
 
-            image.color = interactable ? Color.white : new Color(0.55f, 0.55f, 0.55f, 1f); //new Color(1f, 1f, 1f, 0.45f)
+            image.color = interactable ? Color.white : new Color(0.55f, 0.55f, 0.55f, 1f);
 
             isHovering = false;
         }

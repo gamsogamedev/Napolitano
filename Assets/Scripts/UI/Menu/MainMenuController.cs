@@ -7,4 +7,9 @@ public class MainMenuController : MonoBehaviour
     {
         SceneManager.LoadScene("SaveAndLobbyMultiplayer");
     }
+
+    public void QuitGame()
+    {
+        Application.Quit();
+    }
 }

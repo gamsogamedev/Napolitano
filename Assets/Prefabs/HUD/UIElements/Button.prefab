@@ -98,6 +98,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   interactable: 1
+  image: {fileID: 8882808404703314890}
 --- !u!114 &1957448380498324498
 MonoBehaviour:
   m_ObjectHideFlags: 0
