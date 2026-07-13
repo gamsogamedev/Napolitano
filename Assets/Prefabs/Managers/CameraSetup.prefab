@@ -150,9 +150,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc799d3f5315e7deb9e4b1cae828dc73, type: 3}
   m_Name:
   m_EditorClassIdentifier: '::'
+  leftX: -8
+  rightX: 8
+  floorY: -5
+  ceilingY: 15
   maxOrthographicSize: 12
-  horizontalPadding: 1.5
-  verticalPadding: 1.5
+  horizontalPadding: 2
+  verticalPadding: 2
+  followSmoothTime: 0.25
   zoomSmoothTime: 0.3
 --- !u!1 &6328288869819237015
 GameObject:
