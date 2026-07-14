@@ -728,6 +728,11 @@ MonoBehaviour:
   iceCreamGroundCheckY: -0.5
   strawberrySprite: {fileID: 21300000, guid: ff9152fb87de3ba53a27bef2b225ad6b, type: 3}
   vanillaSprite: {fileID: 21300000, guid: 13609f4e3f8043544b912e5683d41c39, type: 3}
+  popInSound: {fileID: 11400000, guid: 798a9d7690958b23bb4601e8552497c3, type: 2}
+  popOutSound: {fileID: 11400000, guid: 9615bfc8c99542fea94ddcf966d94e1e, type: 2}
+  swooshSound: {fileID: 11400000, guid: 2987d25a790449364b76cbe3f7ec7f3a, type: 2}
+  jumpingSound: {fileID: 11400000, guid: 25d1403f931b4aaa98c7937a0b7309c3, type: 2}
+  landingSound: {fileID: 11400000, guid: 4d39b79d48d0cf01994399de6127987c, type: 2}
 --- !u!114 &7646750329871627487
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -757,7 +762,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 074c91cd2ac103043aeb7cfbe172ac87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::IceCreamMeltTimer
-  meltDuration: 5
+  meltDuration: 8
 --- !u!1 &3597001379446071116
 GameObject:
   m_ObjectHideFlags: 0

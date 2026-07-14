@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UI;
 using Unity.Netcode;
@@ -38,11 +39,6 @@ public class LevelSelectorUIController : MonoBehaviour
     {
         if(SessionManager.Instance.CurrentProfile == null)
         {
-            return -1;
-        }
-
-        if(SessionManager.Instance.CurrentProfile == null)
-        {
             return - 1;
         }
         return SessionManager.Instance.CurrentProfile.maxLevel;
@@ -50,5 +46,19 @@ public class LevelSelectorUIController : MonoBehaviour
     public void GoToLevel(string levelName)
     {
         NetworkManager.Singleton.SceneManager.LoadScene(levelName, LoadSceneMode.Single);
+    }
+    
+    public async void OnExitGameClicked()
+    {
+        try
+        {
+            await SessionManager.Instance.LeaveSession();
+            Application.Quit();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 }

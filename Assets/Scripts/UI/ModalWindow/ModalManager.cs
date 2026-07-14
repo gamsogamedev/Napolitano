@@ -1,6 +1,7 @@
 using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -50,43 +51,64 @@ public class ModalManager : MonoBehaviour
             
             Instance = this;
             DontDestroyOnLoad(gameObject);
+
+            CheckEventSystem();
+            CloseModal();
+        }
+        
+        
+        /*
+         *  Essa checkagem não é necessária, ela serve apenas para garantir que o sistema funcione sem o usuário precisar
+         *  saber como funciona um botão na Unity (precisa de um EventSystem na cena para você clickar com a tela)
+         *
+         *  Caso você garanta que todas as cenas do seu jogo possuem um (se todas tiverem canvas, já vão ter) sinta-se livre
+         *  para deletar esse método.
+         */
+        private void CheckEventSystem()
+        {
+            EventSystem currentEventSystem = FindAnyObjectByType<EventSystem>();
+
+            if (currentEventSystem == null)
+            {
+                GameObject eventSystemGO = new GameObject("EventSystem (Auto-Generated)");
+                eventSystemGO.AddComponent<EventSystem>();
+                
+                Debug.LogWarning("ModalManager: EventSystem não encontrado na hierarquia, gerando um automaticamente");
+
+                #if ENABLE_INPUT_SYSTEM
+                    eventSystemGO.AddComponent<UnityEngine.InputSystem.UI.InputSystemUIInputModule>();
+                #else
+                eventSystemGO.AddComponent<StandaloneInputModule>();
+                #endif
+                    DontDestroyOnLoad(eventSystemGO);
+            }
         }
 
     #endregion
     
-    private bool hasButtons;
-
-    private void OnEnable()
-    {
-        SceneManager.sceneLoaded += OnSceneChange;
-    }
-
-    private void OnDisable()
-    {
-        SceneManager.sceneLoaded -= OnSceneChange;
-    }
-
-    private void OnSceneChange(Scene scene, LoadSceneMode mode)
-    {
-        CloseModal();
-    }
-    
+    private ModalDetails _currentModal;
     
     public void ShowModal(ModalDetails modalDetails, bool autoCloseConfirm = true,  bool autoCloseCancel = true, bool autoCloseAlt = true)
     {
+        _currentModal = modalDetails;
+        
+        modalPanel.gameObject.SetActive(true);
+        
         ConfigureHeader(modalDetails.title);
         
         ConfigureLayout(modalDetails);
-        
-        hasButtons = false;
         
         ConfigureButton(confirmButton, confirmButtonText, modalDetails.confirmText, modalDetails.onConfirm, autoCloseConfirm);
         ConfigureButton(cancelButton, cancelButtonText, modalDetails.cancelText, modalDetails.onCancel, autoCloseCancel);
         ConfigureButton(altButton, alternativeMessageText, modalDetails.alternativeText, modalDetails.onAlternative, autoCloseAlt);
         
-        footerGameObject.SetActive(hasButtons);
+        if (titleText.isActiveAndEnabled) titleText.ForceMeshUpdate();
+        if (horizontalMessageText.isActiveAndEnabled) horizontalMessageText.ForceMeshUpdate();
+        if (verticalMessageText.isActiveAndEnabled) verticalMessageText.ForceMeshUpdate();
         
-        modalPanel.SetActive(true);
+        Canvas.ForceUpdateCanvases();
+        
+        ForceDeepRebuild(modalPanel);
     }
 
     private void ConfigureHeader(string titleDetails)
@@ -104,6 +126,8 @@ public class ModalManager : MonoBehaviour
 
     private void ConfigureLayout(ModalDetails modalDetails)
     {
+        if (contentGameObject) contentGameObject.SetActive(true);
+
         horizontalLayoutGameObject.SetActive(false);
         verticalLayoutGameObject.SetActive(false);
 
@@ -114,7 +138,7 @@ public class ModalManager : MonoBehaviour
                 horizontalLayoutGameObject.SetActive(true);
                 horizontalMessageText.text = modalDetails.message;
 
-                if (modalDetails.contentImage != null)
+                if (modalDetails.contentImage)
                 {
                     horizontalImageGameObject.SetActive(true);
                     horizontalImage.sprite = modalDetails.contentImage;
@@ -131,7 +155,7 @@ public class ModalManager : MonoBehaviour
                 verticalLayoutGameObject.SetActive(true);
                 verticalMessageText.text = modalDetails.message;
 
-                if (modalDetails.contentImage != null)
+                if (modalDetails.contentImage)
                 {
                     verticalImageGameObject.SetActive(true);
                     verticalImage.sprite = modalDetails.contentImage;
@@ -155,13 +179,17 @@ public class ModalManager : MonoBehaviour
             button.gameObject.SetActive(true);
             textContainer.text = contentText;
             
-            hasButtons = true;
-            
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(() =>
             {
+                ModalDetails modalAtClickTime = _currentModal;
+
                 buttonAction?.Invoke();
-                if(autoClose) CloseModal();
+                
+                if(autoClose && _currentModal == modalAtClickTime) 
+                {
+                    CloseModal();
+                }
             });
         }
         else
@@ -170,8 +198,38 @@ public class ModalManager : MonoBehaviour
         }
     }
     
+    private void ForceDeepRebuild(GameObject target)
+    {
+        if(!target.TryGetComponent<RectTransform>(out var rectTransform)) return;
+        
+        foreach (RectTransform child in rectTransform)
+        {
+            if (child.gameObject.activeSelf) LayoutRebuilder.ForceRebuildLayoutImmediate(child);
+        }
+
+        LayoutRebuilder.ForceRebuildLayoutImmediate(rectTransform);
+    }
+    
     public void CloseModal()
     {
         modalPanel.SetActive(false);
+    }
+    
+    private void OnEnable()
+    {
+        // Subscribe to the local scene load event
+        SceneManager.sceneLoaded += HandleSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        // ALWAYS unsubscribe to prevent memory leaks!
+        SceneManager.sceneLoaded -= HandleSceneLoaded;
+    }
+
+    private void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // The moment a client loads a new map, force-close any leftover modals!
+        CloseModal();
     }
 }

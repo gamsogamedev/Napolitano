@@ -19,8 +19,6 @@ public class IceCreamTimerUI : NetworkBehaviour {
 
     public void StartNetworkTimer(float duration) {
 
-        Debug.Log($"StartNetworkTimer chamado. IsOwner: {IsOwner}, IsSpawned: {IsSpawned}");
-
         if (!IsOwner) return;
 
         StartTimerRpc(duration);
@@ -34,8 +32,6 @@ public class IceCreamTimerUI : NetworkBehaviour {
 
     [Rpc(SendTo.Everyone)]
     private void StartTimerRpc(float duration) {
-
-        Debug.Log("StartTimerRpc recebido por este cliente");
 
         StartLocalTimer(duration);
     }

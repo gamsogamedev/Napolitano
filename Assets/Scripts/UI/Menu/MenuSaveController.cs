@@ -1,9 +1,6 @@
-using System;
+
 using TMPro;
-using UnityEditor.Rendering.LookDev;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 using UI;
 
 public class MenuSaveController : MonoBehaviour
@@ -63,8 +60,6 @@ public class MenuSaveController : MonoBehaviour
 
         PlayerProfileDatabase.SaveProfile(profile);
 
-        Debug.Log("Perfil criado com sucesso");
-
         SessionManager.Instance.SetCurrentProfile(profile);
 
         OpenLobby();
@@ -87,8 +82,6 @@ public class MenuSaveController : MonoBehaviour
         }
 
         PlayerProfile profile = PlayerProfileDatabase.LoadProfile(playerName);
-
-        Debug.Log("Perfil carregado: " + profile.playerName);
 
         SessionManager.Instance.SetCurrentProfile(profile);
 

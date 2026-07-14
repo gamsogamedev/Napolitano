@@ -1,3 +1,4 @@
+using AudioSystem;
 using UnityEngine;
 
 namespace Player.States
@@ -20,6 +21,7 @@ namespace Player.States
             if (player.JumpInputThisFrame && player.IsGrounded()) 
             {
                 player.ChangeState(player.IceCreamState);
+                SoundManager.Instance.CreateSound().Play(player.popOutSound);
             }
 
             if (player.InteractInputThisFrame)

@@ -29,7 +29,6 @@ public class IceCreamMeltTimer : MonoBehaviour {
             timerUI?.StopNetworkTimer();
             playerCollision.IceCream_Melted();
         }
-        Debug.Log("Timer Update");
     }
 
     public void StartTimer() {

@@ -22,18 +22,13 @@ namespace UI
         [Space(10)]
         [SerializeField] private bool interactable = true;
 
-        private Image image;
+        [SerializeField] private Image image;
         private bool isHovering = false;
     
         public event Action OnHoverEnter;
         public event Action OnHoverExit;
         public event Action OnStartClick;
         public event Action OnClicked;
-
-        private void Start()
-        {
-            image =  GetComponent<Image>();
-        }
         
         public bool Interactable
         {

@@ -21,7 +21,6 @@ public class SessionManager : Singleton<SessionManager>
         private set
         {
             activeSession = value;
-            Debug.Log("Active Session: " + (activeSession != null ? activeSession.Id : "None"));
         }
     }
 
@@ -50,7 +49,6 @@ public class SessionManager : Singleton<SessionManager>
         {
             await UnityServices.InitializeAsync();
             await AuthenticationService.Instance.SignInAnonymouslyAsync();
-            Debug.Log("AuthenticationService Player ID: " + AuthenticationService.Instance.PlayerId);
         }
         catch (Exception e)
         {
@@ -74,8 +72,6 @@ public class SessionManager : Singleton<SessionManager>
     public async UniTask UpdateSelectedCharacter(int characterIndex)
     {
         if (ActiveSession == null) { return; }
-        
-        Debug.Log("UpdateSelectedCharacter: " + characterIndex);
         
         PlayerSprite playerSprite = characterIndex == 0 ? PlayerSprite.Strawberry : PlayerSprite.Vanilla;
 

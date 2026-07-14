@@ -103,5 +103,13 @@ namespace AudioSystem
             }
             
         #endregion
+
+        [SerializeField] private SoundData music;
+
+        private void Start()
+        {
+            CreateSound().Play(music);
+        }
+        
     }
 }

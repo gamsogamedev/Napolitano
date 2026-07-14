@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.Video;
 
 public class PlayerActions : MonoBehaviour {
-    [Header("Referências")]
+    [Header("Referencias")]
     private PlayerController playerController;
     private PlayerCollision playerCollision;
 

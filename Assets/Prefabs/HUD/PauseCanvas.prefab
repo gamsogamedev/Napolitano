@@ -928,6 +928,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   interactable: 1
+  image: {fileID: 1021889648572675161}
 --- !u!114 &1429597882275462636
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1272,6 +1273,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   interactable: 1
+  image: {fileID: 2421468486318345897}
 --- !u!114 &1875134768887754572
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1471,6 +1473,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   interactable: 1
+  image: {fileID: 5554678453644829033}
 --- !u!114 &3446105106999309740
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2534,6 +2537,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   interactable: 1
+  image: {fileID: 6697388802902218283}
 --- !u!114 &6713282211285848090
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2773,6 +2777,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   interactable: 1
+  image: {fileID: 2678412207579508182}
 --- !u!114 &6145915225615567927
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2985,6 +2990,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   interactable: 1
+  image: {fileID: 2866372935871074274}
 --- !u!114 &5616882001780909736
 MonoBehaviour:
   m_ObjectHideFlags: 0

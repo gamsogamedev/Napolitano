@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: ScrollingWaterFall
+  m_Name: StrawberryWaterfall
   m_Shader: {fileID: -6465566751694194690, guid: 4576821fd407fe352a352c1a35587f20, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -42,7 +42,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Texture:
-        m_Texture: {fileID: 2800000, guid: 212a31f096a5053f8bf0b0ccb94c542c, type: 3}
+        m_Texture: {fileID: 2800000, guid: 460fa092a832cd7f7a60e52cca27d7af, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:

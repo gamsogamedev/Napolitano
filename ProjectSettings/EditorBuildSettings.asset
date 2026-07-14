@@ -8,9 +8,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Menus/MainMenu.unity
     guid: 54178540f63a92bdbb4f9cb803151e45
-  - enabled: 0
-    path: Assets/Scenes/Menus/LobbyMultiplayer.unity
-    guid: 2c79d776c3db518cc82b40575520526d
   - enabled: 1
     path: Assets/Scenes/Menus/LevelSelector.unity
     guid: 48a7e2bb8b2153551b214535707f3edf
@@ -21,14 +18,29 @@ EditorBuildSettings:
     path: Assets/Scenes/Levels/EntregaParcial-2.unity
     guid: d1f83980d94bb6fc5ac798b8b8cb0e93
   - enabled: 1
-    path: Assets/Scenes/Levels/TestHud.unity
+    path: Assets/Scenes/Levels/Tutorial.unity
     guid: 47d5f35cea9a6f94f9c874d58a6e570f
   - enabled: 1
     path: Assets/Scenes/Menus/PlayerProfiles.unity
     guid: b45572b44ec90bb489f39d699aed4e43
   - enabled: 1
     path: Assets/Scenes/Menus/SaveAndLobbyMultiplayer.unity
-    guid: 936163b472a53684ea876209789bfa56
+    guid: 428ad91c3e888f6a5bea82ea2da5befd
+  - enabled: 1
+    path: Assets/Scenes/Levels/MapaFinalBala.unity
+    guid: ecca60f0af462963a97889a360cd6aa8
+  - enabled: 1
+    path: Assets/Scenes/Levels/MapaFinalBreno.unity
+    guid: 4529918a3359b06d9b5f3496890fc6e8
+  - enabled: 1
+    path: Assets/Scenes/Levels/MapaFinalCurry.unity
+    guid: d0580d62a882eda68ae058e0f6d01d42
+  - enabled: 1
+    path: Assets/Scenes/Levels/MapaFinalLeticia.unity
+    guid: 4ca1732fc175fc9f79eb3a2dd532e7c3
+  - enabled: 1
+    path: Assets/Scenes/Levels/MapaFinalNicolas.unity
+    guid: 10ba16e6d3217ec7ab16b43cd812cfa3
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

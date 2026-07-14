@@ -109,7 +109,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 1447006687
+  GlobalObjectIdHash: 2907720625
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -140,3 +140,5 @@ MonoBehaviour:
   - {fileID: 8523521266207817968}
   - {fileID: 59287262213503001}
   levelNumber: 0
+  victorySound: {fileID: 11400000, guid: 981ab49a24722e90b8c1fcf0e3db6992, type: 2}
+  defeatSound: {fileID: 11400000, guid: 1b04cba67cf33fbaa876b9b103bb8bf5, type: 2}

@@ -1,3 +1,4 @@
+using AudioSystem;
 using UnityEngine;
 
 namespace Player.States
@@ -19,6 +20,7 @@ namespace Player.States
             if (!player.Rb) return;
             player.Rb.bodyType = RigidbodyType2D.Kinematic;
             player.Rb.linearVelocity = Vector2.zero;
+            SoundManager.Instance.CreateSound().Play(player.popInSound);
             
 
             if (player.IceCreamCollider) player.IceCreamCollider.enabled = false;
@@ -51,6 +53,7 @@ namespace Player.States
         public void ExitState(PlayerController player)
         {
             if (player.Rb) player.Rb.bodyType = RigidbodyType2D.Dynamic;
+            SoundManager.Instance.CreateSound().Play(player.swooshSound);
             _spoonPosition = null;
             _isRider = false;
             _spoon = null;

@@ -49,7 +49,8 @@ MonoBehaviour:
   collectionCheck: 1
   defaultCapacity: 10
   maxPoolSize: 32
-  maxSoundInstances: 10
+  maxFrequentInstances: 10
+  music: {fileID: 11400000, guid: 5187ee81277b916a2958eccd05078943, type: 2}
 --- !u!114 &8387937801156649703
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using AudioSystem;
 using Player.States;
 using Unity.Netcode;
 using UnityEngine;
@@ -56,6 +57,17 @@ namespace Player
         [Header("Sprites")]
         [SerializeField] private Sprite strawberrySprite;
         [SerializeField] private Sprite vanillaSprite;
+        
+        [Header("Audio")] 
+        [SerializeField] public SoundData popInSound;
+        [SerializeField] public SoundData popOutSound;
+        [SerializeField] public SoundData swooshSound;
+        [SerializeField] public SoundData jumpingSound;
+        [SerializeField] public SoundData landingSound;
+        
+        //You can call these audios witch SoundManager.Instance.CreateSound().Play(soundData)
+
+        
         
         private InputAction _interactAction;
         private InputAction _jumpAction;
@@ -162,7 +174,6 @@ namespace Player
 
             InitializePlayer();
             
-            //TODO: sao 4 da manha dnv e nao quero checkar o pq que precisa dessa merda
             playerNameField.text = _playerName.Value.ToString();
             SetSprite(_playerSprite.Value);
             

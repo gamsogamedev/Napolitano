@@ -1,6 +1,7 @@
 using Player;
 using System;
 using System.Collections.Generic;
+using AudioSystem;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
@@ -14,6 +15,10 @@ public class LevelManager : NetworkBehaviour
 
     [Header("Level Data")] 
     [SerializeField] private int levelNumber;
+
+    [SerializeField] private SoundData victorySound;
+    [SerializeField] private SoundData defeatSound;
+    
     
     public override void OnNetworkSpawn()
     {
@@ -51,6 +56,8 @@ public class LevelManager : NetworkBehaviour
         foreach (var player in PlayerController.AllPlayers.Values) {
             player.GetComponent<PlayerActions>()?.DisablePlayer(true);
         }
+        SoundManager.Instance.CreateSound().Play(victorySound);
+        levelNumber++;
 
         if (NetworkManager.Singleton.LocalClient.IsSessionOwner)
         {
@@ -60,7 +67,7 @@ public class LevelManager : NetworkBehaviour
                 confirmText = "Voltar para seleção de mapa",
                 onConfirm = async () =>
                 {
-                    await SessionManager.Instance.UpdateMaxLevel(levelNumber + 1);
+                    await SessionManager.Instance.UpdateMaxLevel(levelNumber);
 
                     NetworkManager.Singleton.SceneManager.LoadScene("LevelSelector", LoadSceneMode.Single);
                 }
@@ -82,6 +89,7 @@ public class LevelManager : NetworkBehaviour
         foreach (var player in PlayerController.AllPlayers.Values) {
             player.GetComponent<PlayerActions>()?.DisablePlayer(false);
         }
+        SoundManager.Instance.CreateSound().Play(defeatSound);
 
         string customMessage = "Jogador " + playerName + " morreu!";
 

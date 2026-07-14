@@ -5,6 +5,7 @@ public class NetworkTogglableItem : NetworkBehaviour
 {
     [SerializeField] private Renderer sprite;
     [SerializeField] private Collider2D collision;
+    [SerializeField] private bool startActive;
     
     private readonly NetworkVariable<bool> isItemActive = new (
         false,
@@ -12,8 +13,15 @@ public class NetworkTogglableItem : NetworkBehaviour
         NetworkVariableWritePermission.Owner
     );
 
+    private void Awake()
+    {
+        ApplyVisualState(startActive);
+    }
+
     public override void OnNetworkSpawn()
     {
+        if (IsOwner) isItemActive.Value = startActive;
+
         isItemActive.OnValueChanged += HandleStateChange;
         ApplyVisualState(isItemActive.Value);
     }

@@ -1,3 +1,4 @@
+using AudioSystem;
 using UnityEngine;
 
 namespace Player.States
@@ -5,6 +6,7 @@ namespace Player.States
     public class IceCreamState : IPlayerState
     {
         private readonly float _speed;
+        private bool lastFrameGrounded;
 
         public IceCreamState(float speed)
         {
@@ -14,6 +16,7 @@ namespace Player.States
         public void EnterState(PlayerController player) {
 
             player.GetComponent<IceCreamMeltTimer>()?.StartTimer();
+            lastFrameGrounded = true;
         }
 
         public void Execute(PlayerController player)
@@ -24,6 +27,14 @@ namespace Player.States
                 var velocity = player.Rb.linearVelocity;
                 velocity.y = player.JumpForce;
                 player.Rb.linearVelocity = velocity;
+                SoundManager.Instance.CreateSound().Play(player.jumpingSound);
+                lastFrameGrounded = false;
+            }
+
+            if (!lastFrameGrounded && player.Rb.linearVelocity.y < 0 && player.IsGrounded())
+            {
+                SoundManager.Instance.CreateSound().Play(player.landingSound);
+                lastFrameGrounded = true;
             }
 
             if (player.InteractInputThisFrame && player.InteractComponent) player.InteractComponent.CheckAndInteract();

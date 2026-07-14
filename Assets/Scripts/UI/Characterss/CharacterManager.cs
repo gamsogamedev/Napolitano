@@ -75,7 +75,6 @@ public class CharacterManager : MonoBehaviour
 
     private void OnPlayerPropertiesChanged()
     {
-        Debug.Log("Trocou propriedade");
         LoadOtherPlayerSelection();
         CheckStartButton();
     }
@@ -91,8 +90,6 @@ public class CharacterManager : MonoBehaviour
                 continue;
             
             int index = property.Value == nameof(PlayerSprite.Strawberry) ? 0 : 1;
-            
-            Debug.Log(index);
 
             // ignora eu mesmo
             if (player.Id != SessionManager.Instance.ActiveSession.CurrentPlayer.Id)
