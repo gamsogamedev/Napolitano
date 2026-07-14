@@ -63,8 +63,8 @@ public class LevelManager : NetworkBehaviour
         {
             ModalManager.Instance.ShowModal(new ModalDetails
             {
-                title = "Level " +  levelNumber + " Concluído!",
-                confirmText = "Voltar para seleção de mapa",
+                title = "Level " +  levelNumber + " Concluido!",
+                confirmText = "Voltar para seletor de mapa",
                 onConfirm = async () =>
                 {
                     await SessionManager.Instance.UpdateMaxLevel(levelNumber);
@@ -77,7 +77,7 @@ public class LevelManager : NetworkBehaviour
         {
             ModalManager.Instance.ShowModal(new ModalDetails
             {
-                title = "Level " +  levelNumber + " Concluído!",
+                title = "Level " +  levelNumber + " Concluido!",
                 message = "Esperando o host...",
             });
         }
